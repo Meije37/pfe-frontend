@@ -1,0 +1,86 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-blue-900">
+        Créer un compte
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Rejoignez la plateforme de réclamation intelligente
+      </p>
+    </div>
+
+    <form class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="rounded-md shadow-sm space-y-4">
+<!--        <div>-->
+<!--          <label class="block text-sm font-medium text-gray-700">Nom complet</label>-->
+<!--          <input formControlName="nom" type="text" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Sidi Mohamed">-->
+<!--        </div>-->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Prénom</label>
+            <input formControlName="prenom" type="text" required
+                   class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   placeholder="Sidi">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nom</label>
+            <input formControlName="nom" type="text" required
+                   class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   placeholder="Mohamed">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email professionnel</label>
+          <input formControlName="email" type="email" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="nom@exemple.mr">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Téléphone (Mauritanie)</label>
+          <input formControlName="telephone" type="text" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ex: 44112233">
+          @if (registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched) {
+          <p class="text-red-500 text-xs mt-1">Le numéro doit être valide (8 chiffres, commence par 2, 3 ou 4).</p>
+          }
+        </div>
+
+<!--        <div>-->
+<!--          <label class="block text-sm font-medium text-gray-700">Mot de passe</label>-->
+<!--          <input formControlName="motDePasse" type="password" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="••••••••">-->
+<!--        </div>-->
+        <div class="space-y-1">
+          <label class="block text-sm font-semibold text-gray-700">Mot de passe</label>
+          <div class="relative group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="motDePasse"
+              required
+              class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none pr-12"
+              placeholder="••••••••">
+
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="absolute inset-y-0 right-0 flex items-center px-4"
+            >
+              <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"
+                 class="text-blue-600"
+                 style="font-size: 1.2rem;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="registerForm.invalid" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 transition-all">
+          S'inscrire maintenant
+        </button>
+      </div>
+    </form>
+
+    <div class="text-center">
+      <a routerLink="/login" class="font-medium text-blue-600 hover:text-blue-500 text-sm">
+        Déjà un compte ? Connectez-vous
+      </a>
+    </div>
+  </div>
+</div>
