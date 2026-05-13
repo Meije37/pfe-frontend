@@ -1,0 +1,64 @@
+<div class="mb-6">
+  <button (click)="retour()"
+          class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors cursor-pointer">
+    <i class="fa-solid fa-arrow-left text-xs"></i>
+    Retour à la liste
+  </button>
+</div>
+
+<div *ngIf="loading" class="flex justify-center py-10">
+  <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+</div>
+
+<div *ngIf="!loading && utilisateur" class="max-w-3xl mx-auto">
+
+  <div class="bg-white rounded-t-2xl border border-gray-200 p-8">
+    <div class="flex items-center gap-6">
+      <div class="w-20 h-20 rounded-full bg-blue-700 flex items-center justify-center text-white text-3xl font-bold">
+        {{ utilisateur.prenom[0] }}{{ utilisateur.nom[0] }}
+      </div>
+      <div>
+        <h2 class="text-2xl font-extrabold text-gray-900">{{ utilisateur.prenom }} {{ utilisateur.nom }}</h2>
+        <div class="flex items-center gap-3 mt-2">
+          <span [class]="'px-3 py-1 rounded-full text-xs font-bold border ' + getRoleBadge(utilisateur.role)">
+            {{ utilisateur.role }}
+          </span>
+          <span *ngIf="utilisateur.actif" class="flex items-center gap-1 text-xs text-green-600 font-medium">
+            <i class="fa-solid fa-circle text-[8px]"></i> Compte Actif
+          </span>
+          <span *ngIf="!utilisateur.actif" class="flex items-center gap-1 text-xs text-red-600 font-medium">
+            <i class="fa-solid fa-circle text-[8px]"></i> Compte Désactivé
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-50 rounded-b-2xl border-x border-b border-gray-200 p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <div class="space-y-1">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Adresse Email</p>
+      <div class="flex items-center gap-3 text-gray-700">
+        <i class="fa-solid fa-envelope text-blue-500"></i>
+        <span class="font-medium">{{ utilisateur.email }}</span>
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Téléphone</p>
+      <div class="flex items-center gap-3 text-gray-700">
+        <i class="fa-solid fa-phone text-blue-500"></i>
+        <span class="font-medium">+222 {{ utilisateur.telephone }}</span>
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Identifiant Système</p>
+      <div class="flex items-center gap-3 text-gray-700">
+        <i class="fa-solid fa-fingerprint text-blue-500"></i>
+        <span class="font-mono text-sm">#USR-00{{ utilisateur.id }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>

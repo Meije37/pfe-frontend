@@ -1,0 +1,271 @@
+<!-- Bouton retour -->
+<div class="mb-6">
+  <button (click)="retour()"
+          class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors cursor-pointer">
+    <i class="fa-solid fa-arrow-left text-xs"></i>
+    Retour aux réclamations
+  </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="loading" class="space-y-4">
+  <div class="h-10 bg-gray-100 rounded-2xl animate-pulse w-1/3"></div>
+  <div class="h-48 bg-gray-100 rounded-2xl animate-pulse"></div>
+</div>
+
+<div *ngIf="!loading && reclamation">
+
+  <!-- ========== EN-TETE ========== -->
+  <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+    <div>
+      <div class="flex items-center gap-3 mb-2">
+        <span class="font-mono text-sm text-blue-700 font-semibold">{{ reclamation.reference }}</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+              [class]="getStatutBadge(reclamation.statut)">
+          {{ reclamation.statut }}
+        </span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+              [class]="getPrioriteBadge(reclamation.priorite)">
+          {{ reclamation.priorite }}
+        </span>
+      </div>
+      <h2 class="text-2xl font-extrabold text-gray-900">{{ reclamation.titre }}</h2>
+      <p class="text-sm text-gray-400 mt-1">
+        <i class="fa-regular fa-calendar mr-1"></i>
+        {{ reclamation.dateCreation | date:'dd/MM/yyyy à HH:mm' }}
+      </p>
+    </div>
+    <button
+      (click)="changerStatut()"
+      class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+      <i class="fa-solid fa-pen-to-square text-xs"></i>
+      Changer le statut
+    </button>
+  </div>
+
+  <!-- ========== GRID PRINCIPAL ========== -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- COLONNE GAUCHE (2/3) -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Card Description -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <i class="fa-solid fa-file-lines mr-2"></i>Description
+        </h3>
+        <p class="text-gray-700 leading-relaxed">{{ reclamation.description }}</p>
+      </div>
+
+      <!-- Card Localisation -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+          <i class="fa-solid fa-location-dot mr-2"></i>Localisation
+        </h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-gray-400 mb-1">Adresse</p>
+            <p class="text-gray-800 font-medium">{{ reclamation.localisation?.adresse ?? '—' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-400 mb-1">Quartier</p>
+            <p class="text-gray-800 font-medium">{{ reclamation.localisation?.quartier ?? '—' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-400 mb-1">Ville</p>
+            <p class="text-gray-800 font-medium">{{ reclamation.localisation?.ville ?? '—' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-400 mb-1">Coordonnées GPS</p>
+            <p class="text-gray-800 font-mono text-xs">
+              {{ reclamation.localisation?.latitude }}, {{ reclamation.localisation?.longitude }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Médias -->
+      <div *ngFor="let media of reclamation.medias"
+           class="rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-video flex items-center justify-center cursor-pointer group relative"
+           (click)="ouvrirImage('http://localhost:8081' + media.url)">
+
+        <img [src]="'http://localhost:8081' + media.url"
+             [alt]="media.nomFichier"
+             class="w-full h-full object-cover transition-transform group-hover:scale-105"
+             (error)="$any($event.target).style.display='none'">
+
+        <!-- Overlay au survol -->
+        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+          <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </div>
+
+        <span class="text-xs text-gray-400 absolute bottom-2">{{ media.nomFichier }}</span>
+      </div>
+
+      <!-- Card Historique des statuts -->
+      <div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <i class="fa-solid fa-clock-rotate-left text-blue-700 text-sm"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-gray-900">Historique des statuts</h3>
+            <p class="text-xs text-gray-400">{{ historique.length }} changement(s)</p>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="p-6">
+          <div *ngIf="historique.length === 0"
+               class="text-center py-8 text-gray-400 text-sm">
+            <i class="fa-solid fa-clock text-2xl mb-2 block"></i>
+            Aucun changement de statut enregistré
+          </div>
+
+          <div class="relative">
+            <div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200"></div>
+            <div *ngFor="let h of historique; let last = last"
+                 class="relative flex gap-4 pb-6" [class.pb-0]="last">
+              <div class="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center flex-shrink-0 z-10">
+                <i class="fa-solid fa-arrow-right text-blue-700 text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0 pt-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                        [class]="getStatutBadge(h.ancienStatut)">
+                    {{ h.ancienStatut }}
+                  </span>
+                  <i class="fa-solid fa-arrow-right text-gray-400 text-xs"></i>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                        [class]="getStatutBadge(h.nouveauStatut)">
+                    {{ h.nouveauStatut }}
+                  </span>
+                </div>
+                <p *ngIf="h.commentaire" class="text-xs text-gray-500 mb-1">
+                  {{ h.commentaire }}
+                </p>
+                <p class="text-xs text-gray-400">
+                  <i class="fa-regular fa-clock mr-1"></i>
+                  {{ h.dateChangement | date:'dd/MM/yyyy à HH:mm' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLONNE DROITE (1/3) -->
+    <div class="space-y-6">
+
+      <!-- Card Score IA -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+          <i class="fa-solid fa-brain mr-2"></i>Analyse IA
+        </h3>
+        <div class="text-center">
+          <div class="text-4xl font-extrabold text-gray-900 mb-1">
+            {{ (reclamation.scoreUrgence * 100) | number:'1.0-0' }}%
+          </div>
+          <p class="text-sm text-gray-400 mb-4">Score d'urgence</p>
+          <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-3 rounded-full transition-all"
+                 [class]="getScoreColor(reclamation.scoreUrgence)"
+                 [style.width]="(reclamation.scoreUrgence * 100) + '%'">
+            </div>
+          </div>
+          <div class="mt-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold"
+                  [class]="getPrioriteBadge(reclamation.priorite)">
+              {{ reclamation.priorite }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Citoyen -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+          <i class="fa-solid fa-user mr-2"></i>Citoyen
+        </h3>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 font-semibold flex items-center justify-center flex-shrink-0">
+            {{ reclamation.citoyen?.prenom?.charAt(0) }}{{ reclamation.citoyen?.nom?.charAt(0) }}
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">{{ reclamation.citoyen?.prenom }} {{ reclamation.citoyen?.nom }}</p>
+            <p class="text-xs text-gray-400">{{ reclamation.citoyen?.email }}</p>
+          </div>
+        </div>
+        <div class="text-sm space-y-2">
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fa-solid fa-phone text-xs w-4"></i>
+            <span>{{ reclamation.citoyen?.telephone ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Catégorie -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <i class="fa-solid fa-tag mr-2"></i>Catégorie
+        </h3>
+        <p class="font-medium text-gray-900">{{ reclamation.categorie?.nom ?? '—' }}</p>
+        <p class="text-xs text-gray-400 mt-1">{{ reclamation.categorie?.description ?? '' }}</p>
+      </div>
+
+      <!-- Card Assignation Agent -->
+      <div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 p-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+          <i class="fa-solid fa-user-tie mr-2"></i>Assigner un agent
+        </h3>
+
+        <!-- Agent déjà assigné -->
+        <div *ngIf="agentAssigne"
+             class="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100 mb-4">
+          <div class="w-9 h-9 rounded-full bg-blue-700 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
+            {{ agentAssigne.prenom?.charAt(0) }}{{ agentAssigne.nom?.charAt(0) }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-blue-900">{{ agentAssigne.prenom }} {{ agentAssigne.nom }}</p>
+            <p class="text-xs text-blue-600">{{ agentAssigne.email }}</p>
+          </div>
+          <span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">
+      Assigné
+    </span>
+        </div>
+
+        <!-- Aucun agent disponible -->
+        <div *ngIf="agents.length === 0"
+             class="text-center py-4 text-gray-400 text-sm">
+          <i class="fa-solid fa-user-slash text-2xl mb-2 block"></i>
+          Aucun agent disponible
+        </div>
+
+        <!-- Select + bouton -->
+        <div *ngIf="agents.length > 0" class="space-y-3">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            {{ agentAssigne ? 'Changer l\'agent' : 'Sélectionner un agent' }}
+          </label>
+          <select
+            [(ngModel)]="agentSelectionne"
+            class="appearance-none w-full rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+            <option [ngValue]="null">-- Choisir un agent --</option>
+            <option *ngFor="let agent of agents" [value]="agent.id">
+              {{ agent.prenom }} {{ agent.nom }}
+            </option>
+          </select>
+          <button
+            (click)="assignerAgent()"
+            [disabled]="!agentSelectionne"
+            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer disabled:opacity-50">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+            {{ agentAssigne ? 'Réassigner' : 'Assigner' }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

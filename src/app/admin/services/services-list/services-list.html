@@ -1,0 +1,154 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-extrabold text-gray-900">Services municipaux</h2>
+    <p class="mt-1 text-sm text-gray-500">Gérez les services techniques et leur rattachement géographique</p>
+  </div>
+  <button (click)="ouvrirCreation()"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+    <i class="fa-solid fa-plus text-xs"></i>
+    Nouveau service
+  </button>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    </div>
+    <select [(ngModel)]="filtreZoneId"
+            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+      <option value="">Toutes les zones</option>
+      <option *ngFor="let z of zones" [value]="z.id">{{ z.nom }}</option>
+    </select>
+  </div>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  <table class="w-full text-left border-collapse">
+    <thead class="bg-gray-50 border-b border-gray-100">
+    <tr>
+      <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Service</th>
+      <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+      <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Zone</th>
+      <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
+      <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+    <tr *ngFor="let s of servicesFiltres" class="hover:bg-gray-50/50 transition-colors">
+      <td class="px-6 py-4">
+        <div class="font-bold text-gray-900">{{ s.nom }}</div>
+        <div class="text-xs text-gray-500 truncate max-w-xs">{{ s.description }}</div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fa-solid fa-envelope text-gray-400 text-xs"></i>
+          {{ s.emailService }}
+        </div>
+      </td>
+      <td class="px-6 py-4">
+    <span *ngIf="s.zone?.nom"
+          class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+      <i class="fa-solid fa-location-dot text-[10px]"></i>
+      {{ s.zone.nom }}
+    </span>
+
+        <span *ngIf="s.nomZone"
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+  <i class="fa-solid fa-location-dot text-[10px]"></i>
+  {{ s.nomZone }}
+</span>
+        <span *ngIf="!s.nomZone" class="text-red-400 text-xs font-bold">
+  <i class="fa-solid fa-triangle-exclamation"></i> Zone non définie
+</span>
+      </td>
+      <td class="px-6 py-4">
+          <span [class]="s.actif ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                class="px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [style.border-color]="s.actif ? '#bbf7d0' : '#fecaca'">
+            {{ s.actif ? 'Opérationnel' : 'Désactivé' }}
+          </span>
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-2">
+          <button (click)="ouvrirEdition(s)" title="Modifier" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors cursor-pointer">
+            <i class="fa-solid fa-pen-to-square text-xs"></i>
+          </button>
+          <button (click)="toggleActif(s)" [title]="s.actif ? 'Désactiver' : 'Activer'"
+                  [class]="s.actif ? 'text-orange-600 hover:bg-orange-50 border-orange-200' : 'text-green-600 hover:bg-green-50 border-green-200'"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 border transition-colors cursor-pointer">
+            <i class="fa-solid" [class.fa-ban]="s.actif" [class.fa-check]="!s.actif"></i>
+          </button>
+          <button (click)="supprimer(s)" title="Supprimer" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 transition-colors cursor-pointer">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+
+    <tr *ngIf="!loading && servicesFiltres.length === 0">
+      <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+        <i class="fa-solid fa-folder-open text-4xl mb-3 block text-gray-200"></i>
+        Aucun service trouvé.
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+      <h3 class="font-extrabold text-gray-900">{{ editMode ? 'Modifier le service' : 'Nouveau service' }}</h3>
+      <button (click)="fermerModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()" class="p-6 space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Nom du service</label>
+        <input formControlName="nom" type="text" placeholder="Ex: Service Voirie"
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea formControlName="description" rows="2" placeholder="Détaillez les compétences du service..."
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Email de contact</label>
+        <input formControlName="emailService" type="email" placeholder="contact@service.mr"
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Zone géographique</label>
+        <select formControlName="zoneId" class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white outline-none focus:ring-2 focus:ring-blue-500">
+          <option [ngValue]="null" disabled>Sélectionner une zone</option>
+          <option *ngFor="let z of zones" [value]="z.id">{{ z.nom }}</option>
+        </select>
+        <p *ngIf="zones.length === 0" class="text-orange-500 text-[10px] mt-1">
+          <i class="fa-solid fa-triangle-exclamation"></i> Créez d'abord une zone géographique.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+        <input formControlName="actif" type="checkbox" id="actif-srv" class="w-4 h-4 text-blue-700 rounded cursor-pointer">
+        <label for="actif-srv" class="text-sm font-medium text-gray-700 cursor-pointer">Service opérationnel</label>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button type="button" (click)="fermerModal()" class="flex-1 py-2.5 px-4 border border-gray-300 text-sm font-bold rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
+          Annuler
+        </button>
+        <button type="submit" [disabled]="form.invalid"
+                class="flex-1 py-2.5 px-4 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 disabled:opacity-50 transition-all cursor-pointer">
+          {{ editMode ? 'Sauvegarder' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

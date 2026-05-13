@@ -1,0 +1,147 @@
+<!-- Titre page -->
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-extrabold text-gray-900">Zones géographiques</h2>
+    <p class="mt-1 text-sm text-gray-500">Gérez les wilaya, moughataa, communes et quartiers couverts</p>
+  </div>
+  <button (click)="ouvrirCreation()"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+    <i class="fa-solid fa-plus text-xs"></i>
+    Nouvelle zone
+  </button>
+</div>
+
+<!-- Barre filtres -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    </div>
+    <select [(ngModel)]="filtreType"
+            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+      <option value="">Tous les types</option>
+      <option *ngFor="let t of typesZone.slice(1)" [value]="t">{{ t }}</option>
+    </select>
+    <span class="ml-auto text-sm text-gray-400">
+      <span class="font-semibold text-gray-700">{{ zonesFiltrees.length }}</span> zone(s)
+    </span>
+  </div>
+</div>
+
+<!-- Loading skeleton -->
+<div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  <div *ngFor="let i of [1,2,3,4,5,6]" class="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse">
+    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
+    <div class="h-3 bg-gray-100 rounded w-full mb-2"></div>
+    <div class="h-3 bg-gray-100 rounded w-2/3"></div>
+  </div>
+</div>
+
+<!-- Grille zones -->
+<div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+  <div *ngFor="let z of zonesFiltrees"
+       class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
+
+    <div class="flex items-start justify-between gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+        <i [class]="getTypeIcon(z.typeZone) + ' text-blue-700 text-sm'"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-extrabold text-gray-900 truncate">{{ z.nom }}</h3>
+        <p class="text-xs text-gray-400 mt-0.5">ID : {{ z.id }}</p>
+      </div>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold flex-shrink-0"
+            [class]="getTypeBadge(z.typeZone)">
+        {{ z.typeZone }}
+      </span>
+    </div>
+
+    <p class="text-sm text-gray-500 leading-relaxed flex-1">{{ z.description || '—' }}</p>
+
+    <div class="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+      <button (click)="ouvrirEdition(z)" title="Modifier"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+        <i class="fa-solid fa-pen-to-square text-xs"></i>
+      </button>
+      <button (click)="supprimer(z)" title="Supprimer"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer border border-red-200">
+        <i class="fa-solid fa-trash text-xs"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="zonesFiltrees.length === 0" class="col-span-3 py-16 text-center">
+    <i class="fa-solid fa-map text-gray-300 text-4xl mb-4 block"></i>
+    <p class="text-gray-500 font-medium">Aucune zone trouvée</p>
+    <button (click)="ouvrirCreation()"
+            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+      Créer la première zone
+    </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
+  <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6">
+
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-xl font-extrabold text-gray-900">{{ editMode ? 'Modifier la zone' : 'Nouvelle zone' }}</h3>
+        <p class="text-sm text-gray-500 mt-1">{{ editMode ? 'Modifiez les informations de la zone' : 'Ajoutez une nouvelle zone géographique' }}</p>
+      </div>
+      <button (click)="fermerModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()" class="space-y-4">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la zone <span class="text-red-500">*</span></label>
+        <input formControlName="nom" type="text"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               placeholder="Ex: Tevragh-Zeina, Ksar, Arafat...">
+        <p *ngIf="form.get('nom')?.invalid && form.get('nom')?.touched" class="text-red-500 text-xs mt-1">Le nom est obligatoire</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Type de zone <span class="text-red-500">*</span></label>
+        <select formControlName="typeZone"
+                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white">
+          <option value="WILAYA">Wilaya</option>
+          <option value="MOUGHATAA">Moughataa</option>
+          <option value="COMMUNE">Commune</option>
+          <option value="QUARTIER">Quartier</option>
+        </select>
+        <div class="mt-2 flex items-center gap-2">
+          <span class="text-xs text-gray-400">Aperçu :</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                [class]="getTypeBadge(form.get('typeZone')?.value ?? 'COMMUNE')">
+            {{ form.get('typeZone')?.value || 'COMMUNE' }}
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+        <textarea formControlName="description" rows="3"
+                  class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-none"
+                  placeholder="Décrivez la zone géographique, ses limites, sa localisation..."></textarea>
+        <p *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-red-500 text-xs mt-1">La description est obligatoire</p>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="fermerModal()"
+                class="flex-1 py-3 px-4 border border-gray-300 text-sm font-bold rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
+          Annuler
+        </button>
+        <button type="submit" [disabled]="form.invalid"
+                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
+          {{ editMode ? 'Modifier' : 'Créer la zone' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

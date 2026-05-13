@@ -1,0 +1,200 @@
+<!-- ============================================================
+     reclamations-list.html — Liste réclamations Admin
+     Style : identique au projet (Tailwind + Font Awesome)
+     ============================================================ -->
+
+<!-- Titre page -->
+<div class="mb-6">
+  <h2 class="text-2xl font-extrabold text-gray-900">Réclamations</h2>
+  <p class="mt-1 text-sm text-gray-500">Gérez et suivez toutes les réclamations citoyennes</p>
+</div>
+
+<!-- ========== BARRE FILTRES ========== -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+  <div class="flex flex-wrap items-center gap-3">
+
+    <!-- Icône filtre -->
+    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    </div>
+
+    <!-- Filtre Statut -->
+    <select
+      [(ngModel)]="filtreStatut"
+      (change)="filtrePriorite = ''; charger()"
+      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+      <option value="">Tous les statuts</option>
+      <option *ngFor="let s of statuts.slice(1)" [value]="s">{{ s }}</option>
+    </select>
+
+    <!-- Filtre Priorité -->
+    <select
+      [(ngModel)]="filtrePriorite"
+      (change)="filtreStatut = ''; charger()"
+      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+      <option value="">Toutes les priorités</option>
+      <option *ngFor="let p of priorites.slice(1)" [value]="p">{{ p }}</option>
+    </select>
+
+    <!-- Bouton réinitialiser -->
+    <button
+      (click)="reinitialiser()"
+      class="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer">
+      <i class="fa-solid fa-rotate-left text-xs"></i>
+      Réinitialiser
+    </button>
+
+    <!-- Compteur résultats -->
+    <span class="ml-auto text-sm text-gray-400">
+      <span class="font-semibold text-gray-700">{{ reclamations.length }}</span> réclamation(s)
+    </span>
+
+  </div>
+</div>
+
+<!-- ========== TABLEAU ========== -->
+<div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+
+  <!-- Loading skeleton -->
+  <div *ngIf="loading" class="p-6 space-y-3">
+    <div *ngFor="let i of [1,2,3,4,5]"
+         class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+  </div>
+
+  <!-- Tableau données -->
+  <div *ngIf="!loading" class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+      <tr class="bg-gray-50 border-b border-gray-100">
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+
+      <tr *ngFor="let rec of reclamations"
+          class="hover:bg-gray-50 transition-colors">
+
+        <!-- Référence -->
+        <td class="px-6 py-4">
+            <span class="font-mono text-xs text-blue-700 font-semibold">
+              {{ rec.reference }}
+            </span>
+        </td>
+
+        <!-- Titre + Localisation -->
+        <td class="px-6 py-4">
+          <p class="text-gray-900 font-medium truncate max-w-[180px]">{{ rec.titre }}</p>
+          <p class="text-xs text-gray-400 truncate max-w-[180px]">
+            <i class="fa-solid fa-location-dot text-xs mr-1"></i>
+            {{ rec.localisation?.quartier }}, {{ rec.localisation?.ville }}
+          </p>
+        </td>
+
+        <!-- Citoyen -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              {{ rec.citoyen?.prenom?.charAt(0) }}{{ rec.citoyen?.nom?.charAt(0) }}
+            </div>
+            <div>
+              <p class="text-xs font-medium text-gray-700">{{ rec.citoyen?.prenom }} {{ rec.citoyen?.nom }}</p>
+              <p class="text-xs text-gray-400">{{ rec.citoyen?.email }}</p>
+            </div>
+          </div>
+        </td>
+
+        <!-- Catégorie -->
+        <td class="px-6 py-4">
+            <span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-lg">
+              {{ rec.categorie?.nom ?? '—' }}
+            </span>
+        </td>
+
+        <!-- Priorité badge -->
+        <td class="px-6 py-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                  [class]="getPrioriteBadge(rec.priorite)">
+              {{ rec.priorite }}
+            </span>
+        </td>
+
+        <!-- Statut badge -->
+        <td class="px-6 py-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                  [class]="getStatutBadge(rec.statut)">
+              {{ rec.statut }}
+            </span>
+        </td>
+
+        <!-- Score IA -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-2">
+            <div class="w-14 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-1.5 rounded-full"
+                   [class]="getScoreColor(rec.scoreUrgence)"
+                   [style.width]="getScoreWidth(rec.scoreUrgence)">
+              </div>
+            </div>
+            <span class="text-xs font-medium text-gray-700">
+                {{ rec.scoreUrgence | number:'1.2-2' }}
+              </span>
+          </div>
+        </td>
+
+        <!-- Date -->
+        <td class="px-6 py-4">
+            <span class="text-xs text-gray-400">
+              {{ rec.dateCreation | date:'dd/MM/yyyy' }}
+            </span>
+        </td>
+
+        <!-- Actions -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-2">
+
+            <!-- Bouton changer statut -->
+            <button
+              (click)="changerStatut(rec)"
+              title="Changer le statut"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+              <i class="fa-solid fa-pen-to-square text-xs"></i>
+            </button>
+            <a [routerLink]="['/admin/reclamations', rec.id]"
+               class="w-8 h-8 flex items-center justify-center rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors border border-purple-200">
+              <i class="fa-solid fa-eye text-xs"></i>
+            </a>
+
+          </div>
+        </td>
+
+
+      </tr>
+
+      <!-- Empty state -->
+      <tr *ngIf="reclamations.length === 0">
+        <td colspan="9" class="px-6 py-16 text-center">
+          <i class="fa-solid fa-folder-open text-gray-300 text-4xl mb-4 block"></i>
+          <p class="text-gray-500 font-medium">Aucune réclamation trouvée</p>
+          <p class="text-gray-400 text-sm mt-1">Essayez de modifier vos filtres</p>
+          <button
+            (click)="reinitialiser()"
+            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+            Réinitialiser les filtres
+          </button>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>

@@ -1,0 +1,178 @@
+<!-- Titre page -->
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-extrabold text-gray-900">Catégories</h2>
+    <p class="mt-1 text-sm text-gray-500">Gérez les catégories de réclamations citoyennes</p>
+  </div>
+  <button
+    (click)="ouvrirCreation()"
+    class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+    <i class="fa-solid fa-plus text-xs"></i>
+    Nouvelle catégorie
+  </button>
+</div>
+
+<!-- ========== CARDS GRILLE ========== -->
+
+<!-- Loading skeleton -->
+<div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  <div *ngFor="let i of [1,2,3,4,5,6]"
+       class="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse">
+    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
+    <div class="h-3 bg-gray-100 rounded w-full mb-2"></div>
+    <div class="h-3 bg-gray-100 rounded w-2/3"></div>
+  </div>
+</div>
+
+<!-- Grille catégories -->
+<div *ngIf="!loading"
+     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+  <div *ngFor="let cat of categories"
+       class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
+
+    <!-- Header card -->
+    <div class="flex items-start justify-between gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-tag text-blue-700 text-sm"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-extrabold text-gray-900 truncate">{{ cat.nom }}</h3>
+        <p class="text-xs text-gray-400 mt-0.5">ID : {{ cat.idCategorie }}</p>
+      </div>
+      <!-- Badge priorité -->
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold flex-shrink-0"
+            [class]="getPrioriteBadge(cat.prioriteParDefaut)">
+        {{ getPrioriteLabel(cat.prioriteParDefaut) }}
+      </span>
+    </div>
+
+    <!-- Description -->
+    <p class="text-sm text-gray-500 leading-relaxed flex-1">
+      {{ cat.description || '—' }}
+    </p>
+
+    <!-- Footer : priorité + actions -->
+    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+      <div class="flex items-center gap-1.5 text-xs text-gray-400">
+        <i class="fa-solid fa-arrow-trend-up text-xs"></i>
+        Priorité par défaut :
+        <span class="font-semibold text-gray-700">{{ cat.prioriteParDefaut }}/5</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Modifier -->
+        <button
+          (click)="ouvrirEdition(cat)"
+          title="Modifier"
+          class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+          <i class="fa-solid fa-pen-to-square text-xs"></i>
+        </button>
+        <!-- Supprimer -->
+        <button
+          (click)="supprimer(cat)"
+          title="Supprimer"
+          class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer border border-red-200">
+          <i class="fa-solid fa-trash text-xs"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="categories.length === 0"
+       class="col-span-3 py-16 text-center">
+    <i class="fa-solid fa-tags text-gray-300 text-4xl mb-4 block"></i>
+    <p class="text-gray-500 font-medium">Aucune catégorie trouvée</p>
+    <button
+      (click)="ouvrirCreation()"
+      class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+      Créer la première catégorie
+    </button>
+  </div>
+
+</div>
+
+<!-- ========== MODAL CREATION / EDITION ========== -->
+<div *ngIf="showModal"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
+
+  <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6">
+
+    <!-- Header modal -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-xl font-extrabold text-gray-900">
+          {{ editMode ? 'Modifier la catégorie' : 'Nouvelle catégorie' }}
+        </h3>
+        <p class="text-sm text-gray-500 mt-1">
+          {{ editMode ? 'Modifiez les informations' : 'Créez une nouvelle catégorie de réclamation' }}
+        </p>
+      </div>
+      <button (click)="fermerModal()"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Formulaire -->
+    <form [formGroup]="form" (ngSubmit)="soumettre()" class="space-y-4">
+
+      <!-- Nom -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Nom de la catégorie <span class="text-red-500">*</span>
+        </label>
+        <input formControlName="nom" type="text"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               placeholder="Ex: Voirie, Eau & Assainissement...">
+        <p *ngIf="form.get('nom')?.invalid && form.get('nom')?.touched"
+           class="text-red-500 text-xs mt-1">Le nom est obligatoire</p>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Description <span class="text-red-500">*</span>
+        </label>
+        <textarea formControlName="description" rows="3"
+                  class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-none"
+                  placeholder="Décrivez les types de problèmes couverts par cette catégorie..."></textarea>
+        <p *ngIf="form.get('description')?.invalid && form.get('description')?.touched"
+           class="text-red-500 text-xs mt-1">La description est obligatoire</p>
+      </div>
+
+      <!-- Priorité par défaut -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Priorité par défaut <span class="text-red-500">*</span>
+          <span class="text-gray-400 font-normal ml-1">(1 = Basse → 5 = Critique)</span>
+        </label>
+        <div class="flex items-center gap-3">
+          <input formControlName="prioriteParDefaut" type="range"
+                 min="1" max="5" step="1"
+                 class="flex-1">
+          <span class="w-24 text-center font-bold text-sm px-2 py-1 rounded-lg"
+                [class]="getPrioriteBadge(form.get('prioriteParDefaut')?.value?? 1)">
+            {{ getPrioriteLabel(form.get('prioriteParDefaut')?.value?? 1) }}
+          </span>
+        </div>
+        <p *ngIf="form.get('prioriteParDefaut')?.invalid && form.get('prioriteParDefaut')?.touched"
+           class="text-red-500 text-xs mt-1">Valeur entre 1 et 5</p>
+      </div>
+
+      <!-- Boutons -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="fermerModal()"
+                class="flex-1 py-3 px-4 border border-gray-300 text-sm font-bold rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
+          Annuler
+        </button>
+        <button type="submit" [disabled]="form.invalid"
+                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
+          {{ editMode ? 'Modifier' : 'Créer' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

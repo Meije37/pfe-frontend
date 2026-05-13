@@ -1,0 +1,266 @@
+<!-- ============================================================
+     utilisateurs-list.html — Gestion Utilisateurs Admin
+     Style : identique au projet (Tailwind + Font Awesome)
+     ============================================================ -->
+
+<!-- Titre page -->
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-extrabold text-gray-900">Utilisateurs</h2>
+    <p class="mt-1 text-sm text-gray-500">Gérez les comptes citoyens, agents et administrateurs</p>
+  </div>
+  <button
+    (click)="ouvrirCreation()"
+    class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+    <i class="fa-solid fa-user-plus text-xs"></i>
+    Nouvel utilisateur
+  </button>
+</div>
+
+<!-- ========== BARRE FILTRES ========== -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+  <div class="flex flex-wrap items-center gap-3">
+
+    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    </div>
+
+    <!-- Filtre rôle -->
+    <select
+      [(ngModel)]="filtreRole"
+      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+      <option value="">Tous les rôles</option>
+      <option *ngFor="let r of roles.slice(1)" [value]="r">{{ r }}</option>
+    </select>
+
+    <!-- Compteur -->
+    <span class="ml-auto text-sm text-gray-400">
+      <span class="font-semibold text-gray-700">{{ utilisateursFiltres.length }}</span> utilisateur(s)
+    </span>
+
+  </div>
+</div>
+
+<!-- ========== TABLEAU ========== -->
+<div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+
+  <!-- Loading skeleton -->
+  <div *ngIf="loading" class="p-6 space-y-3">
+    <div *ngFor="let i of [1,2,3,4]"
+         class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+  </div>
+
+  <!-- Tableau données -->
+  <div *ngIf="!loading" class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+      <tr class="bg-gray-50 border-b border-gray-100">
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+
+      <tr *ngFor="let u of utilisateursFiltres"
+          class="hover:bg-gray-50 transition-colors">
+
+        <!-- Avatar + Nom -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold flex items-center justify-center flex-shrink-0">
+              {{ u.prenom?.charAt(0) }}{{ u.nom?.charAt(0) }}
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">{{ u.prenom }} {{ u.nom }}</p>
+              <p class="text-xs text-gray-400">ID : {{ u.id }}</p>
+            </div>
+          </div>
+        </td>
+
+        <!-- Email -->
+        <td class="px-6 py-4">
+          <span class="text-gray-700">{{ u.email }}</span>
+        </td>
+
+        <!-- Téléphone -->
+        <td class="px-6 py-4">
+          <span class="text-gray-600 font-mono text-xs">{{ u.telephone }}</span>
+        </td>
+
+        <!-- Rôle badge -->
+        <td class="px-6 py-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                  [class]="getRoleBadge(u.role)">
+              {{ u.role }}
+            </span>
+        </td>
+
+        <!-- Statut actif/inactif -->
+        <td class="px-6 py-4">
+            <span *ngIf="u.actif"
+                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+              <i class="fa-solid fa-circle text-green-500" style="font-size:6px"></i>
+              Actif
+            </span>
+          <span *ngIf="!u.actif"
+                class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+              <i class="fa-solid fa-circle text-red-400" style="font-size:6px"></i>
+              Inactif
+            </span>
+        </td>
+
+        <!-- Actions -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-2">
+
+            <!-- Modifier -->
+            <button
+              (click)="ouvrirEdition(u)"
+              title="Modifier"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+              <i class="fa-solid fa-pen-to-square text-xs"></i>
+            </button>
+
+            <!-- Activer / Désactiver -->
+            <button
+              (click)="toggleActif(u)"
+              [title]="u.actif ? 'Désactiver' : 'Activer'"
+              [class]="u.actif
+                  ? 'w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer border border-red-200'
+                  : 'w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors cursor-pointer border border-green-200'">
+              <i [class]="u.actif ? 'fa-solid fa-ban text-xs' : 'fa-solid fa-check text-xs'"></i>
+            </button>
+
+            <!-- Supprimer -->
+            <button
+              (click)="supprimer(u)"
+              title="Supprimer"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer border border-red-200">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+            <a [routerLink]="['/admin/utilisateurs', u.id]"
+               class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors border border-blue-200">
+              <i class="fa-solid fa-eye text-xs"></i>
+            </a>
+
+          </div>
+        </td>
+
+      </tr>
+
+      <!-- Empty state -->
+      <tr *ngIf="utilisateursFiltres.length === 0">
+        <td colspan="6" class="px-6 py-16 text-center">
+          <i class="fa-solid fa-users text-gray-300 text-4xl mb-4 block"></i>
+          <p class="text-gray-500 font-medium">Aucun utilisateur trouvé</p>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== MODAL CREATION / EDITION ========== -->
+<div *ngIf="showModal"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
+
+  <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6">
+
+    <!-- Header modal -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-xl font-extrabold text-gray-900">
+          {{ editMode ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
+        </h3>
+        <p class="text-sm text-gray-500 mt-1">
+          {{ editMode ? 'Modifiez les informations du compte' : 'Créez un nouveau compte utilisateur' }}
+        </p>
+      </div>
+      <button (click)="fermerModal()"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Formulaire -->
+    <form [formGroup]="form" (ngSubmit)="soumettre()" class="space-y-4">
+
+      <!-- Prénom + Nom -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+          <input formControlName="prenom" type="text"
+                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 placeholder="Sidi">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+          <input formControlName="nom" type="text"
+                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 placeholder="Mohamed">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input formControlName="email" type="email"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               placeholder="nom@exemple.mr">
+      </div>
+
+      <!-- Téléphone -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone (Mauritanie)</label>
+        <input formControlName="telephone" type="text"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               placeholder="Ex: 44112233">
+        <p *ngIf="form.get('telephone')?.invalid && form.get('telephone')?.touched"
+           class="text-red-500 text-xs mt-1">
+          Numéro invalide (8 chiffres, commence par 2, 3 ou 4)
+        </p>
+      </div>
+
+      <!-- Mot de passe -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Mot de passe
+          <span *ngIf="editMode" class="text-gray-400 font-normal">(laisser vide pour ne pas changer)</span>
+        </label>
+        <input formControlName="motDePasse" type="password"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               placeholder="••••••••">
+      </div>
+
+      <!-- Rôle -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+        <select formControlName="role"
+                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white">
+          <option value="CITOYEN">CITOYEN</option>
+          <option value="AGENT">AGENT</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+
+      <!-- Boutons -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="fermerModal()"
+                class="flex-1 py-3 px-4 border border-gray-300 text-sm font-bold rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
+          Annuler
+        </button>
+        <button type="submit" [disabled]="form.invalid"
+                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
+          {{ editMode ? 'Modifier' : 'Créer le compte' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
