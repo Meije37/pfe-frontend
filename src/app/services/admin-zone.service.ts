@@ -27,4 +27,10 @@ export class AdminZoneService {
   delete(id: number): Observable<any> {
     return this.http.delete<any>(`${this.API}/${id}`);
   }
+// GET /api/admin/services/{id}/agents
+getAgentsService(serviceId: number): Observable<any[]> {
+  return this.http.get<any[]>(
+    `http://localhost:8081/api/admin/services/${serviceId}/agents`
+  );
+}
 }

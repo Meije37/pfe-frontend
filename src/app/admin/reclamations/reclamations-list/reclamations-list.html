@@ -1,7 +1,3 @@
-<!-- ============================================================
-     reclamations-list.html — Liste réclamations Admin
-     Style : identique au projet (Tailwind + Font Awesome)
-     ============================================================ -->
 
 <!-- Titre page -->
 <div class="mb-6">
@@ -46,12 +42,39 @@
 
     <!-- Compteur résultats -->
     <span class="ml-auto text-sm text-gray-400">
-      <span class="font-semibold text-gray-700">{{ reclamations.length }}</span> réclamation(s)
-    </span>
+  <span class="font-semibold text-gray-700">{{ reclamationsFiltrees.length }}</span>
+  /{{ reclamations.length }} réclamation(s)
+</span>
 
   </div>
 </div>
+<!-- BARRE DE RECHERCHE -->
+<div class="relative mb-6">
 
+  <!-- Icône loupe -->
+  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+    <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+  </div>
+
+  <!-- Input -->
+  <input
+    type="text"
+    [(ngModel)]="recherche"
+    (ngModelChange)="filtrer()"
+    placeholder="Rechercher par référence, titre, citoyen, catégorie, ville..."
+    class="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+           shadow-sm transition-all">
+
+  <!-- Bouton effacer (visible si texte) -->
+  <button *ngIf="recherche"
+          (click)="resetRecherche()"
+          class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400
+                 hover:text-gray-700 transition-colors cursor-pointer">
+    <i class="fa-solid fa-circle-xmark text-sm"></i>
+  </button>
+
+</div>
 <!-- ========== TABLEAU ========== -->
 <div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
 
@@ -80,7 +103,7 @@
 
       <tbody class="divide-y divide-gray-100">
 
-      <tr *ngFor="let rec of reclamations"
+      <tr *ngFor="let rec of reclamationsPaginees"
           class="hover:bg-gray-50 transition-colors">
 
         <!-- Référence -->
@@ -180,21 +203,29 @@
       </tr>
 
       <!-- Empty state -->
-      <tr *ngIf="reclamations.length === 0">
+      <tr *ngIf="reclamationsFiltrees.length === 0">
         <td colspan="9" class="px-6 py-16 text-center">
-          <i class="fa-solid fa-folder-open text-gray-300 text-4xl mb-4 block"></i>
-          <p class="text-gray-500 font-medium">Aucune réclamation trouvée</p>
-          <p class="text-gray-400 text-sm mt-1">Essayez de modifier vos filtres</p>
-          <button
-            (click)="reinitialiser()"
-            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
-            Réinitialiser les filtres
+          <i class="fa-solid fa-magnifying-glass text-gray-300 text-4xl mb-4 block"></i>
+          <p class="text-gray-500 font-medium">
+            {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucune réclamation trouvée' }}
+          </p>
+          <p class="text-gray-400 text-sm mt-1">
+            {{ recherche ? 'Essayez un autre terme de recherche' : 'Essayez de modifier vos filtres' }}
+          </p>
+          <button (click)="recherche ? resetRecherche() : reinitialiser()"
+                  class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+            {{ recherche ? 'Effacer la recherche' : 'Réinitialiser les filtres' }}
           </button>
         </td>
       </tr>
-
       </tbody>
     </table>
+    <app-pagination
+      [totalItems]="reclamationsFiltrees.length"
+      [itemsPerPage]="itemsPerPage"
+      [currentPage]="currentPage"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
   </div>
 
 </div>

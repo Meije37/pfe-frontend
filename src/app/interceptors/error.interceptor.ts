@@ -15,7 +15,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // On nettoie le stockage pour éviter les conflits
         localStorage.clear();
 
-        // On affiche un message sympa à l'utilisateur (Mauritanie context)
+        // On affiche un message sympa à l'utilisateur
         Swal.fire({
           title: 'Session expirée',
           text: 'Votre session a expiré ou vous n\'avez pas les droits nécessaires. Veuillez vous reconnecter.',

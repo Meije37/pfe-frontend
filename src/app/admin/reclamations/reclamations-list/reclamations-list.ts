@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AdminReclamationService } from '../../../services/admin-reclamation.service';
 import Swal from 'sweetalert2';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-reclamations-list',
   standalone: true,
- imports: [CommonModule, FormsModule, RouterModule],
+ imports: [CommonModule, FormsModule, RouterModule,PaginationComponent],
   templateUrl: './reclamations-list.html',
   styleUrl: './reclamations-list.css'
 })
@@ -19,11 +20,14 @@ export class ReclamationsListComponent implements OnInit {
 
   reclamations: any[] = [];
   loading = true;
+  currentPage  = 1;
+  itemsPerPage = 10;
 
   // Filtres
   filtreStatut   = '';
   filtrePriorite = '';
 
+  recherche = '';
   // Options filtres
   statuts   = ['', 'OUVERTE', 'EN_COURS', 'RESOLUE', 'REJETEE', 'ANNULEE'];
   priorites = ['', 'CRITIQUE', 'HAUTE', 'MOYENNE', 'BASSE'];
@@ -137,4 +141,42 @@ export class ReclamationsListComponent implements OnInit {
   getScoreWidth(score: number): string {
     return `${Math.round(score * 100)}%`;
   }
+
+get reclamationsPaginees(): any[] {
+  const debut = (this.currentPage - 1) * this.itemsPerPage;
+  const fin   = debut + this.itemsPerPage;
+  return this.reclamationsFiltrees.slice(debut, fin);
+}
+filtrer() {
+  this.currentPage = 1;
+}
+
+onPageChange(page: number) {
+  this.currentPage = page;
+  // Remonter en haut du tableau
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+// Ajouter ce getter
+get reclamationsFiltrees(): any[] {
+  if (!this.recherche.trim()) return this.reclamations;
+  const terme = this.recherche.toLowerCase().trim();
+  return this.reclamations.filter(r =>
+    r.reference?.toLowerCase().includes(terme)      ||
+    r.titre?.toLowerCase().includes(terme)           ||
+    r.description?.toLowerCase().includes(terme)     ||
+    r.citoyen?.nom?.toLowerCase().includes(terme)    ||
+    r.citoyen?.prenom?.toLowerCase().includes(terme) ||
+    r.citoyen?.email?.toLowerCase().includes(terme)  ||
+    r.categorie?.nom?.toLowerCase().includes(terme)  ||
+    r.localisation?.ville?.toLowerCase().includes(terme) ||
+    r.localisation?.quartier?.toLowerCase().includes(terme)
+  );
+}
+resetRecherche() {
+  this.recherche = '';
+  this.currentPage = 1;
+}
+
 }

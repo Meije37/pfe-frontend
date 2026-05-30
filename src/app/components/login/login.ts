@@ -36,7 +36,9 @@ export class LoginComponent {
         // Redirection selon le rôle
         if (response.role === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);
-        } else {
+        }else if (response.role === 'AGENT') {
+           this.router.navigate(['/agent/dashboard']);}
+      else {
            this.router.navigate(['/dashboard']);
 //           this.router.navigate(['/login']); // citoyen à faire plus tard
         }

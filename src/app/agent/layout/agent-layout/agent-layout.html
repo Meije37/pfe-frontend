@@ -1,0 +1,75 @@
+<div class="flex min-h-screen bg-gray-50">
+
+  <!-- SIDEBAR -->
+  <aside class="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-200"
+         [class.w-56]="sidebarOpen" [class.w-16]="!sidebarOpen">
+
+    <!-- Brand -->
+    <div class="flex items-center gap-3 px-4 py-5 border-b border-gray-200">
+      <div class="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-user-tie text-white text-xs"></i>
+      </div>
+      <div *ngIf="sidebarOpen" class="overflow-hidden">
+        <p class="text-sm font-semibold text-gray-900 leading-tight">Espace Agent</p>
+        <p class="text-xs text-gray-400">Réclamations</p>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 flex flex-col gap-1 px-2 py-4">
+      <p *ngIf="sidebarOpen" class="text-xs text-gray-400 uppercase tracking-widest px-2 mb-2">Menu</p>
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.route"
+         routerLinkActive="bg-green-50 text-green-700 font-medium"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline overflow-hidden whitespace-nowrap">
+        <i [class]="item.icon + ' w-4 text-center flex-shrink-0'"></i>
+        <span *ngIf="sidebarOpen">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <!-- Footer -->
+    <div class="flex items-center gap-2 px-3 py-3 border-t border-gray-200">
+      <div class="w-7 h-7 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+        {{ getInitiales() }}
+      </div>
+      <div *ngIf="sidebarOpen" class="flex-1 overflow-hidden">
+        <p class="text-xs text-gray-700 font-medium truncate">{{ email }}</p>
+        <p class="text-xs text-gray-400">Agent</p>
+      </div>
+      <button (click)="logout()" title="Déconnexion"
+              class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors flex-shrink-0 cursor-pointer">
+        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- CONTENU -->
+  <div class="flex flex-col flex-1 transition-all duration-200"
+       [class.ml-56]="sidebarOpen" [class.ml-16]="!sidebarOpen">
+
+    <!-- TOPBAR -->
+    <header class="sticky top-0 z-40 flex items-center gap-4 bg-white border-b border-gray-200 px-6 py-3">
+      <button (click)="toggleSidebar()"
+              class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer">
+        <i class="fa-solid fa-bars text-sm"></i>
+      </button>
+      <h1 class="flex-1 text-base font-medium text-gray-900">Plateforme de Réclamations Citoyennes</h1>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+          <i class="fa-regular fa-calendar"></i>
+          <span>{{ today | date:'d MMMM yyyy' }}</span>
+        </div>
+        <div routerLink="/agent/profil"
+             class="w-8 h-8 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors">
+          {{ getInitiales() }}
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6">
+      <router-outlet />
+    </main>
+
+  </div>
+</div>

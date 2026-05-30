@@ -82,10 +82,12 @@
           <span>{{ today | date:'d MMMM yyyy' }}</span>
         </div>
         <div class="flex items-center gap-2">
-          <i class="fa-regular fa-bell text-gray-400 text-sm"></i>
-          <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center">
-            {{ getInitiales() }}
-          </div>
+          <a routerLink="/admin/profil" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <i class="fa-regular fa-bell text-gray-400 text-sm"></i>
+            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center">
+              {{ getInitiales() }}
+            </div>
+          </a>
         </div>
       </div>
 

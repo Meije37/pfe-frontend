@@ -44,4 +44,27 @@ export class AdminUtilisateurService {
   delete(id: number): Observable<any> {
     return this.http.delete<any>(`${this.API}/${id}`);
   }
+
+
+  // GET /api/admin/utilisateurs/agents
+  getAllAgents(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API}/agents`);
+  }
+
+  // PUT /api/admin/utilisateurs/{id}/affecter-service/{serviceId}
+  affecterService(agentId: number, serviceId: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.API}/${agentId}/affecter-service/${serviceId}`, {}
+    );
+  }
+
+  // PUT /api/admin/utilisateurs/{id}/retirer-service
+  retirerService(agentId: number): Observable<any> {
+    return this.http.put<any>(`${this.API}/${agentId}/retirer-service`, {});
+  }
+// GET /api/admin/utilisateurs/me
+  getMonProfil(): Observable<any> {
+    return this.http.get<any>(`${this.API}/me`);
+  }
+
 }
