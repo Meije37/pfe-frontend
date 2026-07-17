@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminReclamationService } from '../../../services/admin-reclamation.service';
+import { LocationMapComponent } from '../../../shared/location-map/location-map';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reclamation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent],
   templateUrl: './reclamation-detail.html',
   styleUrl: './reclamation-detail.css'
 })

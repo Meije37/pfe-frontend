@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AgentService } from '../../../services/agent.service';
+import { LocationMapComponent } from '../../../shared/location-map/location-map';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-agent-reclamation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent],
   templateUrl: './reclamation-detail.html',
   styleUrl: './reclamation-detail.css'
 })
@@ -28,7 +29,10 @@ export class AgentReclamationDetailComponent implements OnInit {
 
   charger(id: number) {
     this.service.getById(id).subscribe({
-      next: (data: any) => { this.reclamation = data; this.loading = false; },
+      next: (data: any) => {
+        this.reclamation = data;
+        this.loading = false;
+      },
       error: () => {
         this.loading = false;
         Swal.fire('Erreur', 'Réclamation introuvable ou non assignée.', 'error');

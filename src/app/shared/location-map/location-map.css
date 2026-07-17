@@ -1,0 +1,6 @@
+/* Évite que les tuiles Leaflet passent au-dessus des menus/dropdowns de l'appli */
+:host ::ng-deep .leaflet-pane,
+:host ::ng-deep .leaflet-top,
+:host ::ng-deep .leaflet-bottom {
+  z-index: 10;
+}

@@ -68,25 +68,18 @@
         <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
           <i class="fa-solid fa-location-dot mr-2"></i>Localisation
         </h3>
-        <div class="grid grid-cols-2 gap-4 text-sm" *ngIf="reclamation.localisation">
-          <div>
-            <p class="text-gray-400 mb-1">Adresse</p>
-            <p class="font-medium text-gray-800">{{ reclamation.localisation.adresse }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400 mb-1">Quartier</p>
-            <p class="font-medium text-gray-800">{{ reclamation.localisation.quartier }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400 mb-1">Ville</p>
-            <p class="font-medium text-gray-800">{{ reclamation.localisation.ville }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400 mb-1">GPS</p>
-            <p class="font-mono text-xs text-gray-600">
-              {{ reclamation.localisation.latitude }}, {{ reclamation.localisation.longitude }}
-            </p>
-          </div>
+        <div class="flex items-center gap-2 text-sm mb-4" *ngIf="reclamation.localisation">
+          <span class="text-gray-400">Ville :</span>
+          <span class="font-medium text-gray-800">{{ reclamation.localisation.ville || '—' }}</span>
+        </div>
+
+        <div *ngIf="reclamation.localisation?.latitude && reclamation.localisation?.longitude">
+          <app-location-map
+            [latitude]="reclamation.localisation.latitude"
+            [longitude]="reclamation.localisation.longitude"
+            [adresseLabel]="reclamation.localisation?.ville"
+            [height]="180">
+          </app-location-map>
         </div>
       </div>
 
