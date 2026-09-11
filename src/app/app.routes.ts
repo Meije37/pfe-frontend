@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
-import { RegisterComponent } from './components/register/register';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password';
 // Ajout de l'import pour l'agentGuard (ajustez le nom de l'export s'il diffère dans votre fichier)
 import { adminGuard, agentGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login',    component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  // Pas de route /register publique : les citoyens s'inscrivent via l'app mobile,
+  // et l'admin cree les comptes (citoyen/agent/admin) depuis /admin/utilisateurs.
+  { path: 'mot-de-passe-oublie', component: ForgotPasswordComponent },
 
   // Espace Admin
   {
@@ -91,5 +93,12 @@ export const routes: Routes = [
     ]
   },
 
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // Route 404 — doit rester en dernier
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./shared/not-found/not-found').then(m => m.NotFoundComponent)
+  }
 ];

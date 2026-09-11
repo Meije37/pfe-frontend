@@ -1,0 +1,31 @@
+<div class="flex flex-col items-center justify-center text-center py-16 px-6">
+  <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+       [class.bg-red-50]="mode === 'error'"
+       [class.bg-gray-100]="mode !== 'error'">
+    <i [class]="iconeEffective + ' text-2xl'"
+       [class.text-red-400]="mode === 'error'"
+       [class.text-gray-300]="mode !== 'error'"></i>
+  </div>
+
+  <p class="font-medium"
+     [class.text-red-600]="mode === 'error'"
+     [class.text-gray-500]="mode !== 'error'">
+    {{ title }}
+  </p>
+
+  <p *ngIf="subtitle" class="text-sm text-gray-400 mt-1 max-w-sm">
+    {{ subtitle }}
+  </p>
+
+  <button *ngIf="mode === 'error' && showRetry"
+          (click)="retry.emit()"
+          class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+    <i class="fa-solid fa-rotate-right mr-1.5"></i>{{ retryLabel }}
+  </button>
+
+  <!-- Actions additionnelles propres à chaque liste (ex: "Créer le premier élément",
+       "Effacer la recherche") passées par le composant parent, affichées
+       seulement quand il n'y a pas d'erreur (pas de sens de proposer de créer
+       quelque chose si on n'a même pas pu contacter le serveur). -->
+  <ng-content *ngIf="mode !== 'error'"></ng-content>
+</div>

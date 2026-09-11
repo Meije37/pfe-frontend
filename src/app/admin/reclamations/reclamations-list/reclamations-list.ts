@@ -1,31 +1,35 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AdminReclamationService } from '../../../services/admin-reclamation.service';
 import Swal from 'sweetalert2';
 import { PaginationComponent } from '../../../shared/pagination/pagination';
+import { ListStateComponent } from '../../../shared/list-state/list-state';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-reclamations-list',
   standalone: true,
- imports: [CommonModule, FormsModule, RouterModule,PaginationComponent],
+ imports: [CommonModule, FormsModule, RouterModule,PaginationComponent, ListStateComponent],
   templateUrl: './reclamations-list.html',
   styleUrl: './reclamations-list.css'
 })
 export class ReclamationsListComponent implements OnInit {
 
   private service = inject(AdminReclamationService);
+  private route   = inject(ActivatedRoute);
 
   reclamations: any[] = [];
   loading = true;
+  erreur = false;
   currentPage  = 1;
   itemsPerPage = 10;
 
   // Filtres
   filtreStatut   = '';
   filtrePriorite = '';
+  triUrgence     = false;
 
   recherche = '';
   // Options filtres
@@ -33,12 +37,22 @@ export class ReclamationsListComponent implements OnInit {
   priorites = ['', 'CRITIQUE', 'HAUTE', 'MOYENNE', 'BASSE'];
 
   ngOnInit() {
+    // Arrivée depuis le widget "Réclamations urgentes" du dashboard
+    if (this.route.snapshot.queryParamMap.get('tri') === 'urgence') {
+      this.triUrgence = true;
+    }
     this.charger();
+  }
+
+  toggleTriUrgence() {
+    this.triUrgence = !this.triUrgence;
+    this.currentPage = 1;
   }
 
   // ---- Chargement selon filtres actifs ----
   charger() {
     this.loading = true;
+    this.erreur = false;
 
     let obs;
     if (this.filtreStatut) {
@@ -56,6 +70,7 @@ export class ReclamationsListComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
+        this.erreur = true;
         Swal.fire('Erreur', 'Impossible de charger les réclamations.', 'error');
       }
     });
@@ -70,6 +85,9 @@ export class ReclamationsListComponent implements OnInit {
 
   // ---- Changer le statut d'une réclamation ----
   changerStatut(rec: any) {
+    if (rec.statut === 'RESOLUE') {
+      return; // Sécurité supplémentaire : le bouton est déjà désactivé dans le template
+    }
     Swal.fire({
       title: 'Changer le statut',
       html: `<p class="text-sm text-gray-500 mb-2">Réclamation : <strong>${rec.reference}</strong></p>`,
@@ -160,19 +178,28 @@ onPageChange(page: number) {
 
 // Ajouter ce getter
 get reclamationsFiltrees(): any[] {
-  if (!this.recherche.trim()) return this.reclamations;
-  const terme = this.recherche.toLowerCase().trim();
-  return this.reclamations.filter(r =>
-    r.reference?.toLowerCase().includes(terme)      ||
-    r.titre?.toLowerCase().includes(terme)           ||
-    r.description?.toLowerCase().includes(terme)     ||
-    r.citoyen?.nom?.toLowerCase().includes(terme)    ||
-    r.citoyen?.prenom?.toLowerCase().includes(terme) ||
-    r.citoyen?.email?.toLowerCase().includes(terme)  ||
-    r.categorie?.nom?.toLowerCase().includes(terme)  ||
-    r.localisation?.ville?.toLowerCase().includes(terme) ||
-    r.localisation?.quartier?.toLowerCase().includes(terme)
-  );
+  let liste = this.reclamations;
+
+  if (this.recherche.trim()) {
+    const terme = this.recherche.toLowerCase().trim();
+    liste = liste.filter(r =>
+      r.reference?.toLowerCase().includes(terme)      ||
+      r.titre?.toLowerCase().includes(terme)           ||
+      r.description?.toLowerCase().includes(terme)     ||
+      r.citoyen?.nom?.toLowerCase().includes(terme)    ||
+      r.citoyen?.prenom?.toLowerCase().includes(terme) ||
+      r.citoyen?.email?.toLowerCase().includes(terme)  ||
+      r.categorie?.nom?.toLowerCase().includes(terme)  ||
+      r.localisation?.ville?.toLowerCase().includes(terme) ||
+      r.localisation?.quartier?.toLowerCase().includes(terme)
+    );
+  }
+
+  if (this.triUrgence) {
+    liste = [...liste].sort((a, b) => (b.scoreUrgence ?? 0) - (a.scoreUrgence ?? 0));
+  }
+
+  return liste;
 }
 resetRecherche() {
   this.recherche = '';

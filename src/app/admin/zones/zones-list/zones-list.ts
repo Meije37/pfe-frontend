@@ -2,12 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AdminZoneService } from '../../../services/admin-zone.service';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-zones-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './zones-list.html',
   styleUrl: './zones-list.css'
 })
@@ -24,6 +25,47 @@ export class ZonesListComponent implements OnInit {
 
   filtreType = '';
   typesZone  = ['', 'WILAYA', 'MOUGHATAA', 'COMMUNE', 'QUARTIER'];
+  recherche  = '';
+
+  // Pagination (sur la liste déjà filtrée par type + recherche)
+  currentPage  = 1;
+  itemsPerPage = 10;
+
+  get zonesFiltrees(): any[] {
+    let liste = this.zones;
+
+    if (this.filtreType) {
+      liste = liste.filter(z => z.typeZone === this.filtreType);
+    }
+
+    if (this.recherche.trim()) {
+      const terme = this.recherche.toLowerCase().trim();
+      liste = liste.filter((z: any) =>
+        z.nom?.toLowerCase().includes(terme) ||
+        z.description?.toLowerCase().includes(terme)
+      );
+    }
+
+    return liste;
+  }
+
+  get zonesPaginees(): any[] {
+    const debut = (this.currentPage - 1) * this.itemsPerPage;
+    return this.zonesFiltrees.slice(debut, debut + this.itemsPerPage);
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+  }
+
+  onFiltreChange() {
+    this.currentPage = 1;
+  }
+
+  resetRecherche() {
+    this.recherche = '';
+    this.currentPage = 1;
+  }
 
   form = this.fb.group({
     nom:         ['', Validators.required],
@@ -38,17 +80,16 @@ export class ZonesListComponent implements OnInit {
   charger() {
     this.loading = true;
     this.service.getAll().subscribe({
-      next: (data: any[]) => { this.zones = data; this.loading = false; },
+      next: (data: any[]) => {
+        this.zones = data;
+        this.currentPage = 1;
+        this.loading = false;
+      },
       error: () => {
         this.loading = false;
         Swal.fire('Erreur', 'Impossible de charger les zones.', 'error');
       }
     });
-  }
-
-  get zonesFiltrees(): any[] {
-    if (!this.filtreType) return this.zones;
-    return this.zones.filter(z => z.typeZone === this.filtreType);
   }
 
   ouvrirCreation() {

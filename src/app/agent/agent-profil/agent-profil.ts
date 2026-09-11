@@ -2,8 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AgentService } from '../../services/agent.service';
-// ✅ Correction du chemin d'accès (2 niveaux au lieu de 3) :
-import { AdminUtilisateurService } from '../../services/admin-utilisateur.service';
+import { ProfilService } from '../../services/profil.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,21 +14,30 @@ import Swal from 'sweetalert2';
 })
 export class AgentProfilComponent implements OnInit {
   private agentService = inject(AgentService);
-  private userService = inject(AdminUtilisateurService);
+  private profilService = inject(ProfilService);
   private fb = inject(FormBuilder);
 
   profil: any = null;
   stats: any = null;
 
   loading = true;
-  isSubmitting = false;
+  isSubmittingInfos = false;
+  isSubmittingPwd = false;
 
-  form = this.fb.group({
+  formInfos = this.fb.group({
     nom: ['', Validators.required],
     prenom: ['', Validators.required],
     email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
     telephone: ['', [Validators.required, Validators.pattern('^[234]\\d{7}$')]],
-    motDePasse: ['']
+  });
+
+  // Séparé du formulaire d'infos : /api/profil/mot-de-passe exige l'ancien
+  // mot de passe pour vérification côté serveur, ce n'est pas juste un
+  // champ optionnel comme c'était le cas avec l'ancien endpoint admin.
+  formPwd = this.fb.group({
+    ancienMotDePasse: ['', Validators.required],
+    nouveauMotDePasse: ['', [Validators.required, Validators.minLength(6)]],
+    confirmation: ['', Validators.required],
   });
 
   ngOnInit() {
@@ -43,12 +51,11 @@ export class AgentProfilComponent implements OnInit {
       next: (profilData: any) => {
         this.profil = profilData;
 
-        this.form.patchValue({
+        this.formInfos.patchValue({
           nom: profilData.nom,
           prenom: profilData.prenom,
           email: profilData.email,
           telephone: profilData.telephone,
-          motDePasse: ''
         });
 
         this.agentService.getStats().subscribe({
@@ -68,40 +75,62 @@ export class AgentProfilComponent implements OnInit {
     });
   }
 
-  sauvegarder() {
-    if (this.form.invalid || !this.profil) return;
+  sauvegarderInfos() {
+    if (this.formInfos.invalid) return;
 
-    this.isSubmitting = true;
-    const val = this.form.getRawValue();
+    this.isSubmittingInfos = true;
+    const val = this.formInfos.getRawValue();
 
-    const body: any = {
-      nom: val.nom,
-      prenom: val.prenom,
-      email: val.email,
-      telephone: val.telephone,
-      role: this.profil.role,
-      actif: this.profil.actif
-    };
-
-    if (val.motDePasse && val.motDePasse.trim() !== '') {
-      body.motDePasse = val.motDePasse;
-    }
-
-    this.userService.update(this.profil.id, body).subscribe({
+    this.profilService.modifier({
+      nom: val.nom!,
+      prenom: val.prenom!,
+      telephone: val.telephone!,
+    }).subscribe({
       next: () => {
-        this.isSubmitting = false;
+        this.isSubmittingInfos = false;
         Swal.fire({
           title: 'Succès !',
-          text: 'Votre profil a été mis à jour avec succès.',
+          text: 'Vos informations ont été mises à jour.',
           icon: 'success',
           confirmButtonColor: '#16a34a'
         });
         this.chargerDonneesAgent();
       },
-      // ✅ Spécification explicite du type (err: any) pour supprimer l'erreur d'objet 'unknown'
       error: (err: any) => {
-        this.isSubmitting = false;
+        this.isSubmittingInfos = false;
         Swal.fire('Erreur', err.error?.message || 'Erreur lors de la mise à jour.', 'error');
+      }
+    });
+  }
+
+  changerMotDePasse() {
+    if (this.formPwd.invalid) return;
+
+    const val = this.formPwd.getRawValue();
+    if (val.nouveauMotDePasse !== val.confirmation) {
+      Swal.fire('Erreur', 'Les mots de passe ne correspondent pas.', 'error');
+      return;
+    }
+
+    this.isSubmittingPwd = true;
+
+    this.profilService.changerMotDePasse({
+      ancienMotDePasse: val.ancienMotDePasse!,
+      nouveauMotDePasse: val.nouveauMotDePasse!,
+    }).subscribe({
+      next: () => {
+        this.isSubmittingPwd = false;
+        this.formPwd.reset();
+        Swal.fire({
+          title: 'Succès !',
+          text: 'Votre mot de passe a été mis à jour.',
+          icon: 'success',
+          confirmButtonColor: '#16a34a'
+        });
+      },
+      error: (err: any) => {
+        this.isSubmittingPwd = false;
+        Swal.fire('Erreur', err.error?.message || 'Ancien mot de passe incorrect.', 'error');
       }
     });
   }

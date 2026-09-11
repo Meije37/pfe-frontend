@@ -16,9 +16,10 @@ export class LoginComponent {
   private router = inject(Router);
   showPassword = false;
 
-    togglePassword(): void {
-        this.showPassword = !this.showPassword;
-}
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     motDePasse: ['', Validators.required]
@@ -27,22 +28,26 @@ export class LoginComponent {
   onLogin() {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
-      next: (response: any) => {
-        // Stocker token + role + email
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('role',  response.role);
-        localStorage.setItem('email', response.email);
+        next: (response) => {
+          // Le token + refreshToken sont déjà stockés par AuthService.login()
 
-        // Redirection selon le rôle
-        if (response.role === 'ADMIN') {
-          this.router.navigate(['/admin/dashboard']);
-        }else if (response.role === 'AGENT') {
-           this.router.navigate(['/agent/dashboard']);}
-      else {
-           this.router.navigate(['/dashboard']);
-//           this.router.navigate(['/login']); // citoyen à faire plus tard
-        }
-      },
+          // Redirection selon le rôle
+          if (response.role === 'ADMIN') {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (response.role === 'AGENT') {
+            this.router.navigate(['/agent/dashboard']);
+          } else {
+            // Compte CITOYEN : le web ne sert pas ce rôle, on ne déconnecte pas
+            // brutalement mais on l'informe clairement (au lieu de rediriger
+            // vers /dashboard, une route qui n'existe pas sur le web).
+            Swal.fire({
+              title: 'Application mobile requise',
+              text: 'Cet espace web est réservé aux agents et administrateurs. Utilisez l\'application mobile pour accéder à votre espace citoyen.',
+              icon: 'info',
+              confirmButtonText: 'Compris'
+            });
+          }
+        },
         error: () => alert('Identifiants invalides')
       });
     }

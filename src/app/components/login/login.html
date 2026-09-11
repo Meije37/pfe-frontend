@@ -36,6 +36,9 @@
           <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
           <label class="ml-2 block text-gray-900">Se souvenir de moi</label>
         </div>
+        <a routerLink="/mot-de-passe-oublie" class="text-sm font-medium text-blue-600 hover:underline">
+          Mot de passe oublié ?
+        </a>
       </div>
 
       <button type="submit" [disabled]="loginForm.invalid" class="w-full py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50">
@@ -44,7 +47,7 @@
     </form>
 
     <p class="text-center text-sm text-gray-600">
-      Nouveau ici ? <a routerLink="/register" class="text-blue-600 font-bold hover:underline">Créer un compte</a>
+      Vous êtes citoyen ? Téléchargez l'application mobile pour créer un compte.
     </p>
   </div>
 </div>

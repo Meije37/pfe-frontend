@@ -4,13 +4,15 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AgentService } from '../../../services/agent.service';
 import { PaginationComponent } from '../../../shared/pagination/pagination';
+import { ListStateComponent } from '../../../shared/list-state/list-state';
+import Swal from 'sweetalert2';
 
 
 
 @Component({
   selector: 'app-mes-reclamations',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, PaginationComponent, ListStateComponent],
   templateUrl: './mes-reclamations.html',
   styleUrl: './mes-reclamations.css'
 })
@@ -20,22 +22,59 @@ export class MesReclamationsComponent implements OnInit {
 
   reclamations: any[] = [];
   loading             = true;
+  erreur              = false;
   filtreStatut        = '';
+  recherche    = '';
 currentPage  = 1;
 itemsPerPage = 10;
   ngOnInit() { this.charger(); }
 
   charger() {
     this.loading = true;
+    this.erreur  = false;
     this.service.getMesReclamations().subscribe({
-      next: (data: any[]) => { this.reclamations = data; this.loading = false; },
-      error: () => { this.loading = false; }
+      next: (data: any[]) => {
+        this.reclamations = data;
+        this.currentPage = 1;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.erreur  = true;
+        Swal.fire('Erreur', 'Impossible de charger vos réclamations.', 'error');
+      }
     });
   }
 
+  onFiltreChange() {
+    this.currentPage = 1;
+  }
+
+  resetRecherche() {
+    this.recherche = '';
+    this.currentPage = 1;
+  }
+
   get reclamationsFiltrees(): any[] {
-    if (!this.filtreStatut) return this.reclamations;
-    return this.reclamations.filter(r => r.statut === this.filtreStatut);
+    let liste = this.reclamations;
+
+    if (this.filtreStatut) {
+      liste = liste.filter(r => r.statut === this.filtreStatut);
+    }
+
+    if (this.recherche.trim()) {
+      const terme = this.recherche.toLowerCase().trim();
+      liste = liste.filter((r: any) =>
+        r.reference?.toLowerCase().includes(terme)          ||
+        r.titre?.toLowerCase().includes(terme)               ||
+        r.description?.toLowerCase().includes(terme)         ||
+        r.categorie?.nom?.toLowerCase().includes(terme)      ||
+        r.localisation?.ville?.toLowerCase().includes(terme) ||
+        r.localisation?.quartier?.toLowerCase().includes(terme)
+      );
+    }
+
+    return liste;
   }
 
   getStatutBadge(s: string): string {

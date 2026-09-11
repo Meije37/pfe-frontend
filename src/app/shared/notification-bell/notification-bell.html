@@ -1,0 +1,58 @@
+<div class="relative">
+
+  <!-- Bouton cloche -->
+  <button (click)="toggleMenu()"
+          class="relative flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+    <i class="fa-regular fa-bell text-gray-500 text-sm"></i>
+    <span *ngIf="nombreNonLues > 0"
+          class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[10px]
+                 font-bold flex items-center justify-center leading-none">
+      {{ nombreNonLues > 9 ? '9+' : nombreNonLues }}
+    </span>
+  </button>
+
+  <!-- Menu déroulant -->
+  <div *ngIf="ouvert"
+       class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
+      <button *ngIf="nombreNonLues > 0" (click)="toutMarquerCommeLu()"
+              class="text-xs text-blue-600 font-medium hover:underline cursor-pointer">
+        Tout marquer comme lu
+      </button>
+    </div>
+
+    <div class="max-h-96 overflow-y-auto">
+
+      <!-- Chargement -->
+      <div *ngIf="chargement" class="p-6 text-center text-gray-400 text-sm">
+        <i class="fa-solid fa-spinner fa-spin mr-2"></i>Chargement...
+      </div>
+
+      <!-- Vide -->
+      <div *ngIf="!chargement && notifications.length === 0" class="p-8 text-center">
+        <i class="fa-regular fa-bell-slash text-2xl text-gray-300 mb-2 block"></i>
+        <p class="text-sm text-gray-400">Aucune notification</p>
+      </div>
+
+      <!-- Liste -->
+      <div *ngFor="let notif of notifications"
+           (click)="ouvrirNotification(notif)"
+           [class]="notif.lu
+             ? 'px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors'
+             : 'px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50/50 transition-colors bg-blue-50/30'">
+        <div class="flex items-start gap-2">
+          <span *ngIf="!notif.lu" class="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0"></span>
+          <span *ngIf="notif.lu" class="w-2 h-2 flex-shrink-0"></span>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-gray-900 truncate">{{ notif.titre }}</p>
+            <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{ notif.message }}</p>
+            <p class="text-[11px] text-gray-400 mt-1">{{ notif.dateEnvoi | date:'d MMM à HH:mm' }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

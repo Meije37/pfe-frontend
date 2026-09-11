@@ -1,8 +1,10 @@
-<div class="flex min-h-screen bg-gray-50">
+<!-- Conteneur principal sans overflow qui force le débordement -->
+<div class="min-h-screen bg-gray-50">
 
-  <!-- SIDEBAR -->
+  <!-- ========== SIDEBAR AGENT (Fixée à gauche) ========== -->
   <aside class="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-200"
-         [class.w-56]="sidebarOpen" [class.w-16]="!sidebarOpen">
+         [class.w-56]="sidebarOpen"
+         [class.w-16]="!sidebarOpen">
 
     <!-- Brand -->
     <div class="flex items-center gap-3 px-4 py-5 border-b border-gray-200">
@@ -27,7 +29,7 @@
       </a>
     </nav>
 
-    <!-- Footer -->
+    <!-- Footer Sidebar -->
     <div class="flex items-center gap-2 px-3 py-3 border-t border-gray-200">
       <div class="w-7 h-7 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
         {{ getInitiales() }}
@@ -44,30 +46,46 @@
 
   </aside>
 
-  <!-- CONTENU -->
-  <div class="flex flex-col flex-1 transition-all duration-200"
-       [class.ml-56]="sidebarOpen" [class.ml-16]="!sidebarOpen">
+  <!-- ========== CONTENU PRINCIPAL AGENT ========== -->
+  <div class="flex flex-col min-h-screen min-w-0 transition-all duration-200"
+       [class.ml-56]="sidebarOpen"
+       [class.ml-16]="!sidebarOpen">
 
     <!-- TOPBAR -->
-    <header class="sticky top-0 z-40 flex items-center gap-4 bg-white border-b border-gray-200 px-6 py-3">
-      <button (click)="toggleSidebar()"
-              class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer">
-        <i class="fa-solid fa-bars text-sm"></i>
-      </button>
-      <h1 class="flex-1 text-base font-medium text-gray-900">Plateforme de Réclamations Citoyennes</h1>
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 text-xs text-gray-400">
+    <header class="sticky top-0 z-40 flex items-center justify-between gap-4 bg-white border-b border-gray-200 px-6 py-3">
+
+      <!-- Gauche : Menu Toggle + Titre -->
+      <div class="flex items-center gap-4 min-w-0">
+        <button (click)="toggleSidebar()"
+                class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer flex-shrink-0">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+        <h1 class="text-base font-medium text-gray-900 truncate">
+          Plateforme de Réclamations Citoyennes
+        </h1>
+      </div>
+
+      <!-- Droite : Date + Cloche + Avatar -->
+      <div class="flex items-center gap-4 flex-shrink-0">
+        <div class="hidden sm:flex items-center gap-2 text-xs text-gray-400">
           <i class="fa-regular fa-calendar"></i>
           <span>{{ today | date:'d MMMM yyyy' }}</span>
         </div>
-        <div routerLink="/agent/profil"
-             class="w-8 h-8 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors">
-          {{ getInitiales() }}
+
+        <div class="flex items-center gap-3">
+          <app-notification-bell></app-notification-bell>
+
+          <a routerLink="/agent/profil"
+             class="w-8 h-8 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors no-underline">
+            {{ getInitiales() }}
+          </a>
         </div>
       </div>
+
     </header>
 
-    <main class="flex-1 p-6">
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-6 min-w-0 overflow-x-auto">
       <router-outlet />
     </main>
 

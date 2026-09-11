@@ -3,8 +3,7 @@ import {
   ViewChild, ElementRef, SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-declare const L: any; // Leaflet chargé via CDN dans index.html
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-location-map',
@@ -62,7 +61,7 @@ export class LocationMapComponent implements AfterViewInit, OnChanges, OnDestroy
   }
 
   private initPreviewMap(): void {
-    if (!this.previewMapRef || typeof L === 'undefined') return;
+    if (!this.previewMapRef) return;
 
     this.previewInstance = L.map(this.previewMapRef.nativeElement, {
       center: [this.latitude, this.longitude],
@@ -93,7 +92,7 @@ export class LocationMapComponent implements AfterViewInit, OnChanges, OnDestroy
     // Le conteneur plein écran vient de s'afficher (*ngIf) : on attend le
     // prochain cycle pour que Leaflet mesure une taille non nulle.
     setTimeout(() => {
-      if (!this.fullMapRef || typeof L === 'undefined') return;
+      if (!this.fullMapRef) return;
 
       // Sécurité : si une instance précédente traîne encore, on la détruit
       this.fullInstance?.remove();

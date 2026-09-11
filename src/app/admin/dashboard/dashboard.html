@@ -1,5 +1,3 @@
-
-
 <!-- Titre de la page -->
 <div class="mb-6">
   <h2 class="text-2xl font-extrabold text-gray-900">Tableau de bord</h2>
@@ -7,18 +5,18 @@
 </div>
 
 <!-- ========== STATS CARDS ========== -->
-<div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+<div *ngIf="loading" class="flex flex-wrap gap-5 mb-8">
   <div *ngFor="let i of [1,2,3,4]"
-       class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+       class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
     <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
     <div class="h-8 bg-gray-200 rounded w-1/3"></div>
   </div>
 </div>
 
-<div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+<div *ngIf="!loading && stats" class="flex flex-wrap gap-5 mb-8">
 
   <!-- Card : Total réclamations -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Total réclamations</p>
       <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -30,7 +28,7 @@
   </div>
 
   <!-- Card : Total utilisateurs -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Utilisateurs</p>
       <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
@@ -42,7 +40,7 @@
   </div>
 
   <!-- Card : Total zones -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Zones</p>
       <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -54,7 +52,7 @@
   </div>
 
   <!-- Card : Total services -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Services</p>
       <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center">
@@ -63,6 +61,71 @@
     </div>
     <p class="text-3xl font-extrabold text-gray-900">{{ stats.nombreServices ?? 0 }}</p>
     <p class="text-xs text-gray-400 mt-1">Services actifs</p>
+  </div>
+
+</div>
+
+<!-- ========== GRAPHIQUES ========== -->
+<div *ngIf="loadingCharts" class="space-y-5 mb-8">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+    <div class="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+    <div class="h-24 bg-gray-100 rounded-lg"></div>
+  </div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+    <div class="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+    <div class="h-64 bg-gray-100 rounded-lg"></div>
+  </div>
+</div>
+
+<div *ngIf="!loadingCharts && chartsData" class="space-y-5 mb-8">
+
+  <!-- Évolution 14 jours — bande fine pleine largeur -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+        <i class="fa-solid fa-chart-line text-blue-700 text-xs"></i>
+      </div>
+      <h3 class="text-sm font-bold text-gray-900">Réclamations créées — 14 derniers jours</h3>
+    </div>
+    <div style="height: 140px;">
+      <canvas #evolutionCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- Répartitions — un seul graphique affiché à la fois, via onglets -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+
+    <div class="flex items-center gap-1 border-b border-gray-100 pb-3 mb-4">
+      <button (click)="changerOnglet('statut')"
+              [class]="ongletActif === 'statut'
+                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
+                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
+        <i class="fa-solid fa-chart-pie mr-1.5 text-xs"></i>Par statut
+      </button>
+      <button (click)="changerOnglet('priorite')"
+              [class]="ongletActif === 'priorite'
+                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
+                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
+        <i class="fa-solid fa-triangle-exclamation mr-1.5 text-xs"></i>Par priorité
+      </button>
+      <button (click)="changerOnglet('categorie')"
+              [class]="ongletActif === 'categorie'
+                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
+                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
+        <i class="fa-solid fa-tags mr-1.5 text-xs"></i>Par catégorie
+      </button>
+    </div>
+
+    <!-- Un seul canvas, réutilisé pour les 3 vues -->
+    <div class="relative" style="height: 320px;">
+      <canvas #repartitionCanvas></canvas>
+      <div *ngIf="ongletActif === 'statut'"
+           class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+           style="top: 40%;">
+        <span class="text-2xl font-extrabold text-gray-900">{{ stats?.nombreReclamations ?? 0 }}</span>
+        <span class="text-[11px] text-gray-400 uppercase tracking-wide">Total</span>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -81,7 +144,7 @@
         <p class="text-xs text-gray-400">Triées par score IA décroissant</p>
       </div>
     </div>
-    <a routerLink="/admin/reclamations"
+    <a routerLink="/admin/reclamations" [queryParams]="{ tri: 'urgence' }"
        class="text-sm font-medium text-blue-700 hover:text-blue-800 hover:underline transition-colors">
       Voir tout <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
     </a>
@@ -104,11 +167,13 @@
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="px-6 py-3"></th>
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
       <tr *ngFor="let rec of urgentes"
-          class="hover:bg-gray-50 transition-colors">
+          [routerLink]="['/admin/reclamations', rec.id]"
+          class="hover:bg-blue-50/50 cursor-pointer transition-colors">
 
         <!-- Référence -->
         <td class="px-6 py-4">
@@ -165,11 +230,16 @@
           <span class="text-xs text-gray-400">{{ rec.dateCreation | date:'dd/MM/yyyy' }}</span>
         </td>
 
+        <!-- Action -->
+        <td class="px-6 py-4 text-right">
+          <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+        </td>
+
       </tr>
 
       <!-- Empty state -->
       <tr *ngIf="urgentes.length === 0">
-        <td colspan="7" class="px-6 py-12 text-center">
+        <td colspan="8" class="px-6 py-12 text-center">
           <i class="fa-solid fa-circle-check text-green-400 text-3xl mb-3 block"></i>
           <p class="text-gray-500 text-sm font-medium">Aucune réclamation urgente</p>
         </td>

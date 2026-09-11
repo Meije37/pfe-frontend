@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AdminServiceMunicipalService } from '../../../services/admin-service-municipal.service';
 import { AdminZoneService } from '../../../services/admin-zone.service';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-services-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './services-list.html',
   styleUrl: './services-list.css'
 })
@@ -26,6 +27,48 @@ export class ServicesListComponent implements OnInit {
   editId: number | null = null;
 
   filtreZoneId = '';
+  recherche    = '';
+
+  // Pagination (sur la liste déjà filtrée par zone + recherche)
+  currentPage  = 1;
+  itemsPerPage = 10;
+
+  get servicesFiltres(): any[] {
+   let liste = this.services;
+
+   if (this.filtreZoneId) {
+     liste = liste.filter(s => s.zoneId === Number(this.filtreZoneId));
+   }
+
+   if (this.recherche.trim()) {
+     const terme = this.recherche.toLowerCase().trim();
+     liste = liste.filter((s: any) =>
+       s.nom?.toLowerCase().includes(terme) ||
+       s.description?.toLowerCase().includes(terme) ||
+       s.emailService?.toLowerCase().includes(terme)
+     );
+   }
+
+   return liste;
+  }
+
+  get servicesPagines(): any[] {
+    const debut = (this.currentPage - 1) * this.itemsPerPage;
+    return this.servicesFiltres.slice(debut, debut + this.itemsPerPage);
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+  }
+
+  onFiltreChange() {
+    this.currentPage = 1;
+  }
+
+  resetRecherche() {
+    this.recherche = '';
+    this.currentPage = 1;
+  }
 
   form = this.fb.group({
     nom:          ['', Validators.required],
@@ -43,7 +86,11 @@ export class ServicesListComponent implements OnInit {
   charger() {
     this.loading = true;
     this.service.getAll().subscribe({
-      next: (data: any[]) => { this.services = data; this.loading = false; },
+      next: (data: any[]) => {
+        this.services = data;
+        this.currentPage = 1;
+        this.loading = false;
+      },
       error: () => {
         this.loading = false;
         Swal.fire('Erreur', 'Impossible de charger les services.', 'error');
@@ -58,10 +105,6 @@ export class ServicesListComponent implements OnInit {
     });
   }
 
- get servicesFiltres(): any[] {
-   if (!this.filtreZoneId) return this.services;
-   return this.services.filter(s => s.zoneId === Number(this.filtreZoneId));
- }
   ouvrirCreation() {
     this.editMode = false;
     this.editId   = null;

@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
+import { AuthService } from '../../../services/auth';
+import { NotificationBellComponent } from '../../../shared/notification-bell/notification-bell';
+import { NotificationWebSocketService } from '../../../services/notification-websocket.service';
 @Component({
   selector: 'app-agent-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, NotificationBellComponent],
   templateUrl: './agent-layout.html',
   styleUrl: './agent-layout.css'
 })
@@ -20,13 +22,20 @@ export class AgentLayoutComponent {
     { label: 'Mes réclamations',    route: 'mes-reclamations', icon: 'fa-solid fa-file-lines' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private notificationWs: NotificationWebSocketService
+  ) {}
 
   toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
 
   logout() {
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    this.notificationWs.deconnecter();
+    this.authService.logout().subscribe({
+      next:  () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login'])
+    });
   }
 
   getInitiales(): string {

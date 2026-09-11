@@ -56,69 +56,100 @@
     </div>
   </div>
 
-  <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl p-8">
-    <h4 class="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
-      <i class="fa-solid fa-id-card text-green-600 mr-2"></i>Informations professionnelles
-    </h4>
+  <div class="lg:col-span-2 space-y-6">
 
-    <form [formGroup]="form" (ngSubmit)="sauvegarder()" class="space-y-5">
+    <!-- ── Informations professionnelles ─────────────────────────────── -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h4 class="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
+        <i class="fa-solid fa-id-card text-green-600 mr-2"></i>Informations professionnelles
+      </h4>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
-          <input formControlName="prenom" type="text"
-                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+      <form [formGroup]="formInfos" (ngSubmit)="sauvegarderInfos()" class="space-y-5">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+            <input formControlName="prenom" type="text"
+                   class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <input formControlName="nom" type="text"
+                   class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+          </div>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-          <input formControlName="nom" type="text"
-                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+          <label class="block text-sm font-medium text-gray-400 mb-1">Adresse Email professionnelle (Non modifiable)</label>
+          <div class="relative">
+            <input formControlName="email" type="email"
+                   class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed sm:text-sm">
+            <i class="fa-solid fa-lock absolute right-3 top-3.5 text-gray-300 text-sm"></i>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Adresse Email professionnelle (Non modifiable)</label>
-        <div class="relative">
-          <input formControlName="email" type="email"
-                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed sm:text-sm">
-          <i class="fa-solid fa-lock absolute right-3 top-3.5 text-gray-300 text-sm"></i>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de Téléphone (Mauritanie)</label>
-        <input formControlName="telephone" type="text"
-               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-               placeholder="Ex: 44112233">
-        <p *ngIf="form.get('telephone')?.invalid && form.get('telephone')?.touched" class="text-red-500 text-xs mt-1">
-          Numéro invalide (8 chiffres requis, doit débuter par 2, 3 ou 4).
-        </p>
-      </div>
-
-      <div class="pt-4 border-t border-gray-100">
-        <h4 class="text-md font-bold text-gray-900 mb-4">
-          <i class="fa-solid fa-key text-green-600 mr-2"></i>Sécurité du compte
-        </h4>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Nouveau mot de passe <span class="text-gray-400 font-normal">(laisser vide si inchangé)</span>
-          </label>
-          <input formControlName="motDePasse" type="password"
+          <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de Téléphone (Mauritanie)</label>
+          <input formControlName="telephone" type="text"
+                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                 placeholder="Ex: 44112233">
+          <p *ngIf="formInfos.get('telephone')?.invalid && formInfos.get('telephone')?.touched" class="text-red-500 text-xs mt-1">
+            Numéro invalide (8 chiffres requis, doit débuter par 2, 3 ou 4).
+          </p>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button type="submit" [disabled]="formInfos.invalid || isSubmittingInfos"
+                  class="flex items-center gap-2 px-6 py-3 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition-all cursor-pointer disabled:opacity-50">
+            <i *ngIf="isSubmittingInfos" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></i>
+            <i *ngIf="!isSubmittingInfos" class="fa-solid fa-floppy-disk text-xs"></i>
+            Enregistrer les informations
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Sécurité du compte ────────────────────────────────────────── -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h4 class="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
+        <i class="fa-solid fa-key text-green-600 mr-2"></i>Sécurité du compte
+      </h4>
+
+      <form [formGroup]="formPwd" (ngSubmit)="changerMotDePasse()" class="space-y-5">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe actuel</label>
+          <input formControlName="ancienMotDePasse" type="password"
                  class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                  placeholder="••••••••">
         </div>
-      </div>
 
-      <div class="flex justify-end pt-4">
-        <button type="submit" [disabled]="form.invalid || isSubmitting"
-                class="flex items-center gap-2 px-6 py-3 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition-all cursor-pointer disabled:opacity-50">
-          <i *ngIf="isSubmitting" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></i>
-          <i *ngIf="!isSubmitting" class="fa-solid fa-floppy-disk text-xs"></i>
-          Enregistrer les modifications
-        </button>
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nouveau mot de passe</label>
+            <input formControlName="nouveauMotDePasse" type="password"
+                   class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                   placeholder="Au moins 6 caractères">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le nouveau mot de passe</label>
+            <input formControlName="confirmation" type="password"
+                   class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                   placeholder="••••••••">
+          </div>
+        </div>
 
-    </form>
+        <div class="flex justify-end pt-2">
+          <button type="submit" [disabled]="formPwd.invalid || isSubmittingPwd"
+                  class="flex items-center gap-2 px-6 py-3 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition-all cursor-pointer disabled:opacity-50">
+            <i *ngIf="isSubmittingPwd" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></i>
+            <i *ngIf="!isSubmittingPwd" class="fa-solid fa-key text-xs"></i>
+            Changer le mot de passe
+          </button>
+        </div>
+      </form>
+    </div>
+
   </div>
 
 </div>

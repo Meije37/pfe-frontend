@@ -1,4 +1,3 @@
-
 <!-- Titre page -->
 <div class="mb-6">
   <h2 class="text-2xl font-extrabold text-gray-900">Réclamations</h2>
@@ -75,6 +74,18 @@
   </button>
 
 </div>
+
+<!-- Toggle tri par urgence (score IA) -->
+<div class="mb-6">
+  <button (click)="toggleTriUrgence()"
+          [class]="triUrgence
+            ? 'inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white shadow-sm transition-colors cursor-pointer'
+            : 'inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer'">
+    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+    Trier par urgence (score IA)
+    <i *ngIf="triUrgence" class="fa-solid fa-check text-xs"></i>
+  </button>
+</div>
 <!-- ========== TABLEAU ========== -->
 <div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
 
@@ -89,41 +100,47 @@
     <table class="w-full text-sm">
       <thead>
       <tr class="bg-gray-50 border-b border-gray-100">
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="sticky right-0 bg-gray-50 text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Actions</th>
       </tr>
       </thead>
 
       <tbody class="divide-y divide-gray-100">
 
       <tr *ngFor="let rec of reclamationsPaginees"
-          class="hover:bg-gray-50 transition-colors">
+          class="group hover:bg-gray-50 transition-colors">
 
         <!-- Référence -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="font-mono text-xs text-blue-700 font-semibold">
               {{ rec.reference }}
             </span>
         </td>
 
         <!-- Titre + Localisation -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <p class="text-gray-900 font-medium truncate max-w-[180px]">{{ rec.titre }}</p>
           <p class="text-xs text-gray-400 truncate max-w-[180px]">
             <i class="fa-solid fa-location-dot text-xs mr-1"></i>
             {{ rec.localisation?.quartier }}, {{ rec.localisation?.ville }}
           </p>
+          <span *ngIf="rec.nombreVotes > 0"
+                class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700"
+                title="Nombre de citoyens qui soutiennent cette réclamation">
+            <i class="fa-solid fa-heart text-[10px]"></i>
+            {{ rec.nombreVotes }} soutien{{ rec.nombreVotes > 1 ? 's' : '' }}
+          </span>
         </td>
 
         <!-- Citoyen -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
               {{ rec.citoyen?.prenom?.charAt(0) }}{{ rec.citoyen?.nom?.charAt(0) }}
@@ -136,14 +153,14 @@
         </td>
 
         <!-- Catégorie -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-lg">
               {{ rec.categorie?.nom ?? '—' }}
             </span>
         </td>
 
         <!-- Priorité badge -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   [class]="getPrioriteBadge(rec.priorite)">
               {{ rec.priorite }}
@@ -151,7 +168,7 @@
         </td>
 
         <!-- Statut badge -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   [class]="getStatutBadge(rec.statut)">
               {{ rec.statut }}
@@ -159,7 +176,7 @@
         </td>
 
         <!-- Score IA -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <div class="flex items-center gap-2">
             <div class="w-14 h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div class="h-1.5 rounded-full"
@@ -174,21 +191,24 @@
         </td>
 
         <!-- Date -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="text-xs text-gray-400">
               {{ rec.dateCreation | date:'dd/MM/yyyy' }}
             </span>
         </td>
 
         <!-- Actions -->
-        <td class="px-6 py-4">
+        <td class="sticky right-0 bg-white group-hover:bg-gray-50 px-4 py-4 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">
           <div class="flex items-center gap-2">
 
             <!-- Bouton changer statut -->
             <button
               (click)="changerStatut(rec)"
-              title="Changer le statut"
-              class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+              [disabled]="rec.statut === 'RESOLUE'"
+              [title]="rec.statut === 'RESOLUE' ? 'Réclamation résolue : statut verrouillé' : 'Changer le statut'"
+              [class]="rec.statut === 'RESOLUE'
+                ? 'w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                : 'w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200'">
               <i class="fa-solid fa-pen-to-square text-xs"></i>
             </button>
             <a [routerLink]="['/admin/reclamations', rec.id]"
@@ -202,20 +222,31 @@
 
       </tr>
 
-      <!-- Empty state -->
-      <tr *ngIf="reclamationsFiltrees.length === 0">
-        <td colspan="9" class="px-6 py-16 text-center">
-          <i class="fa-solid fa-magnifying-glass text-gray-300 text-4xl mb-4 block"></i>
-          <p class="text-gray-500 font-medium">
-            {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucune réclamation trouvée' }}
-          </p>
-          <p class="text-gray-400 text-sm mt-1">
-            {{ recherche ? 'Essayez un autre terme de recherche' : 'Essayez de modifier vos filtres' }}
-          </p>
-          <button (click)="recherche ? resetRecherche() : reinitialiser()"
-                  class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
-            {{ recherche ? 'Effacer la recherche' : 'Réinitialiser les filtres' }}
-          </button>
+      <!-- État vide -->
+      <tr *ngIf="!erreur && reclamationsFiltrees.length === 0">
+        <td colspan="9" class="p-0">
+          <app-list-state
+            mode="empty"
+            icon="fa-solid fa-magnifying-glass"
+            [title]="recherche ? 'Aucun résultat pour &quot;' + recherche + '&quot;' : 'Aucune réclamation trouvée'"
+            [subtitle]="recherche ? 'Essayez un autre terme de recherche' : 'Essayez de modifier vos filtres'">
+            <button (click)="recherche ? resetRecherche() : reinitialiser()"
+                    class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+              {{ recherche ? 'Effacer la recherche' : 'Réinitialiser les filtres' }}
+            </button>
+          </app-list-state>
+        </td>
+      </tr>
+
+      <!-- État erreur réseau -->
+      <tr *ngIf="erreur">
+        <td colspan="9" class="p-0">
+          <app-list-state
+            mode="error"
+            title="Impossible de charger les réclamations"
+            subtitle="Vérifiez votre connexion et réessayez."
+            (retry)="charger()">
+          </app-list-state>
         </td>
       </tr>
       </tbody>

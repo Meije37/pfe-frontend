@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AdminCategorieService } from '../../../services/admin-categorie.service';
 import { AdminServiceMunicipalService } from '../../../services/admin-service-municipal.service';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-categories-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './categories-list.html',
   styleUrl: './categories-list.css'
 })
@@ -25,6 +26,39 @@ export class CategoriesListComponent implements OnInit {
   editMode          = false;
   editId: number | null = null;
 
+  recherche = '';
+
+  // Pagination (même logique que reclamations-list)
+  currentPage  = 1;
+  itemsPerPage = 9; // 3 colonnes x 3 lignes, cohérent avec la grille
+
+  get categoriesFiltrees(): any[] {
+    if (!this.recherche.trim()) return this.categories;
+    const terme = this.recherche.toLowerCase().trim();
+    return this.categories.filter((c: any) =>
+      c.nom?.toLowerCase().includes(terme) ||
+      c.description?.toLowerCase().includes(terme)
+    );
+  }
+
+  get categoriesPagineees(): any[] {
+    const debut = (this.currentPage - 1) * this.itemsPerPage;
+    return this.categoriesFiltrees.slice(debut, debut + this.itemsPerPage);
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+  }
+
+  resetRecherche() {
+    this.recherche = '';
+    this.currentPage = 1;
+  }
+
+  onRechercheChange() {
+    this.currentPage = 1;
+  }
+
   form = this.fb.group({
     nom:               ['', Validators.required],
     description:       ['', Validators.required],
@@ -40,7 +74,11 @@ export class CategoriesListComponent implements OnInit {
   charger() {
     this.loading = true;
     this.service.getAll().subscribe({
-      next: (data: any[]) => { this.categories = data; this.loading = false; },
+      next: (data: any[]) => {
+        this.categories = data;
+        this.currentPage = 1;
+        this.loading = false;
+      },
       error: () => {
         this.loading = false;
         Swal.fire('Erreur', 'Impossible de charger les catégories.', 'error');

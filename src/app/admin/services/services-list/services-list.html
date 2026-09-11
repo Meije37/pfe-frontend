@@ -15,11 +15,28 @@
     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
       <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
     </div>
-    <select [(ngModel)]="filtreZoneId"
+    <select [(ngModel)]="filtreZoneId" (ngModelChange)="onFiltreChange()"
             class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
       <option value="">Toutes les zones</option>
       <option *ngFor="let z of zones" [value]="z.id">{{ z.nom }}</option>
     </select>
+
+    <div class="relative flex-1 min-w-[220px]">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs"></i>
+      </div>
+      <input
+        type="text"
+        [(ngModel)]="recherche"
+        (ngModelChange)="onFiltreChange()"
+        placeholder="Rechercher par nom, email, description..."
+        class="w-full pl-9 pr-9 py-2 border border-gray-300 rounded-lg text-sm text-gray-900
+               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <button *ngIf="recherche" (click)="resetRecherche()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+        <i class="fa-solid fa-circle-xmark text-xs"></i>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -35,7 +52,7 @@
     </tr>
     </thead>
     <tbody class="divide-y divide-gray-50">
-    <tr *ngFor="let s of servicesFiltres" class="hover:bg-gray-50/50 transition-colors">
+    <tr *ngFor="let s of servicesPagines" class="hover:bg-gray-50/50 transition-colors">
       <td class="px-6 py-4">
         <div class="font-bold text-gray-900">{{ s.nom }}</div>
         <div class="text-xs text-gray-500 truncate max-w-xs">{{ s.description }}</div>
@@ -89,12 +106,21 @@
     <tr *ngIf="!loading && servicesFiltres.length === 0">
       <td colspan="5" class="px-6 py-12 text-center text-gray-500">
         <i class="fa-solid fa-folder-open text-4xl mb-3 block text-gray-200"></i>
-        Aucun service trouvé.
+        {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucun service trouvé.' }}
       </td>
     </tr>
     </tbody>
   </table>
 </div>
+
+<!-- Pagination -->
+<app-pagination
+  *ngIf="!loading && servicesFiltres.length > 0"
+  [totalItems]="servicesFiltres.length"
+  [itemsPerPage]="itemsPerPage"
+  [currentPage]="currentPage"
+  (pageChange)="onPageChange($event)">
+</app-pagination>
 
 <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">

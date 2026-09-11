@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AgentService {
 
   private http = inject(HttpClient);
-  private readonly API = 'http://localhost:8081/api/agent';
+  private readonly API = `${environment.apiUrl}/agent`;
 
   // GET /api/agent/stats
   getStats(): Observable<any> {

@@ -4,12 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminReclamationService } from '../../../services/admin-reclamation.service';
 import { LocationMapComponent } from '../../../shared/location-map/location-map';
+import { CommentairesReclamationComponent } from '../../../shared/commentaires-reclamation/commentaires-reclamation';
+import { InterventionsReclamationComponent } from '../../../shared/interventions-reclamation/interventions-reclamation';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reclamation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent, CommentairesReclamationComponent, InterventionsReclamationComponent],
   templateUrl: './reclamation-detail.html',
   styleUrl: './reclamation-detail.css'
 })

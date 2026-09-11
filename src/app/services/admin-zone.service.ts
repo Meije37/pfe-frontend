@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminZoneService {
 
   private http = inject(HttpClient);
-  private readonly API = 'http://localhost:8081/api/admin/zones';
+  private readonly API = `${environment.apiUrl}/admin/zones`;
 
   getAll(): Observable<any[]> {
     return this.http.get<any[]>(this.API);
@@ -30,7 +31,7 @@ export class AdminZoneService {
 // GET /api/admin/services/{id}/agents
 getAgentsService(serviceId: number): Observable<any[]> {
   return this.http.get<any[]>(
-    `http://localhost:8081/api/admin/services/${serviceId}/agents`
+    `${environment.apiUrl}/admin/services/${serviceId}/agents`
   );
 }
 }

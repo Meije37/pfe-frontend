@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth';
+import { NotificationBellComponent } from '../../shared/notification-bell/notification-bell';
+import { NotificationWebSocketService } from '../../services/notification-websocket.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, NotificationBellComponent],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css'
 })
@@ -24,15 +27,22 @@ navItems = [
     { label: 'Catégories',      route: 'categories',   icon: 'fa-solid fa-tags' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private notificationWs: NotificationWebSocketService
+  ) {}
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
   logout() {
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    this.notificationWs.deconnecter();
+    this.authService.logout().subscribe({
+      next:  () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']) // même si l'appel échoue, on déconnecte localement
+    });
   }
 
   getInitiales(): string {

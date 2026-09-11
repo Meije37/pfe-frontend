@@ -29,6 +29,7 @@ export class UtilisateursListComponent implements OnInit {
 
   filtreRole = '';
   roles      = ['', 'ADMIN', 'AGENT', 'CITOYEN'];
+  recherche  = '';
   pageActuelle = 1;
   elementsParPage = 5;
 
@@ -64,8 +65,23 @@ export class UtilisateursListComponent implements OnInit {
   }
 
   get utilisateursFiltres(): any[] {
-    if (!this.filtreRole) return this.utilisateurs;
-    return this.utilisateurs.filter(u => u.role === this.filtreRole);
+    let liste = this.utilisateurs;
+
+    if (this.filtreRole) {
+      liste = liste.filter(u => u.role === this.filtreRole);
+    }
+
+    if (this.recherche.trim()) {
+      const terme = this.recherche.toLowerCase().trim();
+      liste = liste.filter((u: any) =>
+        u.nom?.toLowerCase().includes(terme) ||
+        u.prenom?.toLowerCase().includes(terme) ||
+        u.email?.toLowerCase().includes(terme) ||
+        u.telephone?.toLowerCase().includes(terme)
+      );
+    }
+
+    return liste;
   }
 
   // Vérifie si le rôle sélectionné dans le formulaire est AGENT
@@ -191,11 +207,18 @@ export class UtilisateursListComponent implements OnInit {
   onChangementPage(nouvellePage: number) {
     this.pageActuelle = nouvellePage;
   }
+
+  onFiltreChange() {
+    this.pageActuelle = 1;
+  }
+
+  resetRecherche() {
+    this.recherche = '';
+    this.pageActuelle = 1;
+  }
+
 get utilisateursFiltresEtPagines(): any[] {
-    let listeFiltree = this.utilisateurs;
-    if (this.filtreRole) {
-      listeFiltree = this.utilisateurs.filter(u => u.role === this.filtreRole);
-    }
+    const listeFiltree = this.utilisateursFiltres;
 
     const maxPages = Math.ceil(listeFiltree.length / this.elementsParPage) || 1;
     if (this.pageActuelle > maxPages) {
@@ -208,9 +231,6 @@ get utilisateursFiltresEtPagines(): any[] {
     return listeFiltree.slice(indexDebut, indexFin);
   }
   get totalElementsFiltres(): number {
-      if (this.filtreRole) {
-        return this.utilisateurs.filter(u => u.role === this.filtreRole).length;
-      }
-      return this.utilisateurs.length;
-    }
+    return this.utilisateursFiltres.length;
+  }
 }

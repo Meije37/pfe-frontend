@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { AgentService } from '../../../services/agent.service';
 import { LocationMapComponent } from '../../../shared/location-map/location-map';
 import Swal from 'sweetalert2';
-
+import { CommentairesReclamationComponent } from '../../../shared/commentaires-reclamation/commentaires-reclamation';
+import { InterventionsReclamationComponent } from '../../../shared/interventions-reclamation/interventions-reclamation';
 @Component({
   selector: 'app-agent-reclamation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent, CommentairesReclamationComponent,InterventionsReclamationComponent],
   templateUrl: './reclamation-detail.html',
   styleUrl: './reclamation-detail.css'
 })

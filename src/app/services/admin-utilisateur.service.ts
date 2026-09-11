@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminUtilisateurService {
 
   private http = inject(HttpClient);
-  private readonly API = 'http://localhost:8081/api/admin/utilisateurs';
+  private readonly API = `${environment.apiUrl}/admin/utilisateurs`;
 
   // GET /api/admin/utilisateurs
   getAll(): Observable<any[]> {

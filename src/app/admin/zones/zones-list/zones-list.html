@@ -17,12 +17,30 @@
     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
       <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
     </div>
-    <select [(ngModel)]="filtreType"
+    <select [(ngModel)]="filtreType" (ngModelChange)="onFiltreChange()"
             class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
       <option value="">Tous les types</option>
       <option *ngFor="let t of typesZone.slice(1)" [value]="t">{{ t }}</option>
     </select>
-    <span class="ml-auto text-sm text-gray-400">
+
+    <div class="relative flex-1 min-w-[220px]">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs"></i>
+      </div>
+      <input
+        type="text"
+        [(ngModel)]="recherche"
+        (ngModelChange)="onFiltreChange()"
+        placeholder="Rechercher par nom, description..."
+        class="w-full pl-9 pr-9 py-2 border border-gray-300 rounded-lg text-sm text-gray-900
+               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <button *ngIf="recherche" (click)="resetRecherche()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+        <i class="fa-solid fa-circle-xmark text-xs"></i>
+      </button>
+    </div>
+
+    <span class="text-sm text-gray-400">
       <span class="font-semibold text-gray-700">{{ zonesFiltrees.length }}</span> zone(s)
     </span>
   </div>
@@ -40,7 +58,7 @@
 <!-- Grille zones -->
 <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-  <div *ngFor="let z of zonesFiltrees"
+  <div *ngFor="let z of zonesPaginees"
        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
 
     <div class="flex items-start justify-between gap-3">
@@ -74,16 +92,31 @@
   <!-- Empty state -->
   <div *ngIf="zonesFiltrees.length === 0" class="col-span-3 py-16 text-center">
     <i class="fa-solid fa-map text-gray-300 text-4xl mb-4 block"></i>
-    <p class="text-gray-500 font-medium">Aucune zone trouvée</p>
-    <button (click)="ouvrirCreation()"
+    <p class="text-gray-500 font-medium">
+      {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucune zone trouvée' }}
+    </p>
+    <button *ngIf="recherche" (click)="resetRecherche()"
+            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+      Effacer la recherche
+    </button>
+    <button *ngIf="!recherche" (click)="ouvrirCreation()"
             class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
       Créer la première zone
     </button>
   </div>
 </div>
 
+<!-- Pagination -->
+<app-pagination
+  *ngIf="!loading && zonesFiltrees.length > 0"
+  [totalItems]="zonesFiltrees.length"
+  [itemsPerPage]="itemsPerPage"
+  [currentPage]="currentPage"
+  (pageChange)="onPageChange($event)">
+</app-pagination>
+
 <!-- Modal -->
-<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
   <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6">
 
     <div class="flex items-center justify-between">

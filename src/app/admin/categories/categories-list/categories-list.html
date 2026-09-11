@@ -11,6 +11,27 @@
   </button>
 </div>
 
+<!-- Barre de recherche -->
+<div class="relative mb-6">
+  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+    <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+  </div>
+  <input
+    type="text"
+    [(ngModel)]="recherche"
+    (ngModelChange)="onRechercheChange()"
+    placeholder="Rechercher par nom ou description..."
+    class="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+           shadow-sm transition-all">
+  <button *ngIf="recherche"
+          (click)="resetRecherche()"
+          class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400
+                 hover:text-gray-700 transition-colors cursor-pointer">
+    <i class="fa-solid fa-circle-xmark text-sm"></i>
+  </button>
+</div>
+
 <!-- Loading skeleton -->
 <div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
   <div *ngFor="let i of [1,2,3,4,5,6]"
@@ -24,7 +45,7 @@
 <!-- ========== GRILLE CATÉGORIES ========== -->
 <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-  <div *ngFor="let cat of categories"
+  <div *ngFor="let cat of categoriesPagineees"
        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
 
     <!-- Header card -->
@@ -83,10 +104,16 @@
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="categories.length === 0" class="col-span-3 py-16 text-center">
+  <div *ngIf="categoriesFiltrees.length === 0" class="col-span-3 py-16 text-center">
     <i class="fa-solid fa-tags text-gray-300 text-4xl mb-4 block"></i>
-    <p class="text-gray-500 font-medium">Aucune catégorie trouvée</p>
-    <button (click)="ouvrirCreation()"
+    <p class="text-gray-500 font-medium">
+      {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucune catégorie trouvée' }}
+    </p>
+    <button *ngIf="recherche" (click)="resetRecherche()"
+            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+      Effacer la recherche
+    </button>
+    <button *ngIf="!recherche" (click)="ouvrirCreation()"
             class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
       Créer la première catégorie
     </button>
@@ -94,9 +121,18 @@
 
 </div>
 
+<!-- Pagination -->
+<app-pagination
+  *ngIf="!loading && categoriesFiltrees.length > 0"
+  [totalItems]="categoriesFiltrees.length"
+  [itemsPerPage]="itemsPerPage"
+  [currentPage]="currentPage"
+  (pageChange)="onPageChange($event)">
+</app-pagination>
+
 <!-- ========== MODAL CREATION / EDITION ========== -->
 <div *ngIf="showModal"
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
 
   <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6 max-h-[90vh] overflow-y-auto">
 

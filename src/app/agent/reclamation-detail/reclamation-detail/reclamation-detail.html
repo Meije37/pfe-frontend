@@ -28,6 +28,12 @@
               [class]="getPrioriteBadge(reclamation.priorite)">
           {{ reclamation.priorite }}
         </span>
+        <span *ngIf="reclamation.nombreVotes > 0"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700"
+              title="Nombre de citoyens qui soutiennent cette réclamation">
+          <i class="fa-solid fa-heart"></i>
+          {{ reclamation.nombreVotes }} soutien{{ reclamation.nombreVotes > 1 ? 's' : '' }}
+        </span>
       </div>
       <h2 class="text-2xl font-extrabold text-gray-900">{{ reclamation.titre }}</h2>
       <p class="text-sm text-gray-400 mt-1">
@@ -119,11 +125,15 @@
                   <i class="fa-regular fa-clock mr-1"></i>
                   {{ h.dateChangement | date:'dd/MM/yyyy à HH:mm' }}
                 </p>
+                <app-interventions-reclamation *ngIf="reclamation" [reclamationId]="reclamation.id"></app-interventions-reclamation>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Card Commentaires -->
+      <app-commentaires-reclamation *ngIf="reclamation" [reclamationId]="reclamation.id"></app-commentaires-reclamation>
 
     </div>
 

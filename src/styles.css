@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* Empêche toute barre de défilement horizontale accidentelle sur la page,
+   quelle que soit la cause exacte (grille trop large, contenu qui déborde,
+   etc.). Les zones qui ont VRAIMENT besoin de défiler horizontalement
+   (ex: tableaux avec beaucoup de colonnes) utilisent déjà overflow-x-auto
+   sur leur propre conteneur, donc ce blocage global ne les affecte pas. */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
