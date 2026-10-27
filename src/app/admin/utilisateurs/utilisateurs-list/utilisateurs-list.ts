@@ -150,7 +150,7 @@ export class UtilisateursListComponent implements OnInit {
           title: 'Succès !',
           text: this.editMode ? 'Utilisateur modifié.' : 'Utilisateur créé avec succès.',
           icon: 'success',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         });
         this.fermerModal();
         this.charger();
@@ -166,12 +166,12 @@ export class UtilisateursListComponent implements OnInit {
       text: `${u.prenom} ${u.nom} — ${u.email}`,
       icon: 'warning', showCancelButton: true,
       confirmButtonText: libelle, cancelButtonText: 'Annuler',
-      confirmButtonColor: u.actif ? '#dc2626' : '#1d4ed8'
+      confirmButtonColor: u.actif ? '#dc2626' : '#0e6b45'
     }).then(result => {
       if (result.isConfirmed) {
         const obs = u.actif ? this.service.desactiver(u.id) : this.service.activer(u.id);
         obs.subscribe({
-          next: () => { Swal.fire({ title: 'Succès !', icon: 'success', confirmButtonColor: '#1d4ed8' }); this.charger(); },
+          next: () => { Swal.fire({ title: 'Succès !', icon: 'success', confirmButtonColor: '#0e6b45' }); this.charger(); },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
         });
       }
@@ -187,7 +187,7 @@ export class UtilisateursListComponent implements OnInit {
     }).then(result => {
       if (result.isConfirmed) {
         this.service.delete(u.id).subscribe({
-          next: () => { Swal.fire({ title: 'Supprimé !', icon: 'success', confirmButtonColor: '#1d4ed8' }); this.charger(); },
+          next: () => { Swal.fire({ title: 'Supprimé !', icon: 'success', confirmButtonColor: '#0e6b45' }); this.charger(); },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
         });
       }
@@ -197,7 +197,7 @@ export class UtilisateursListComponent implements OnInit {
   getRoleBadge(role: string): string {
     const map: Record<string, string> = {
       'ADMIN':   'bg-purple-100 text-purple-700 border border-purple-200',
-      'AGENT':   'bg-blue-100 text-blue-700 border border-blue-200',
+      'AGENT':   'bg-brand-100 text-brand-700 border border-brand-200',
       'CITOYEN': 'bg-gray-100 text-gray-600 border border-gray-200'
     };
     return map[role] ?? 'bg-gray-100 text-gray-600';

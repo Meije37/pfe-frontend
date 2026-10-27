@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { PrioriteLibellePipe, StatutLibellePipe } from '../../../shared/pipes/libelles';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,10 +8,11 @@ import { LocationMapComponent } from '../../../shared/location-map/location-map'
 import Swal from 'sweetalert2';
 import { CommentairesReclamationComponent } from '../../../shared/commentaires-reclamation/commentaires-reclamation';
 import { InterventionsReclamationComponent } from '../../../shared/interventions-reclamation/interventions-reclamation';
+import { estMessageSysteme as estSysteme } from '../../../shared/historique.util';
 @Component({
   selector: 'app-agent-reclamation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LocationMapComponent, CommentairesReclamationComponent,InterventionsReclamationComponent],
+  imports: [PrioriteLibellePipe, StatutLibellePipe, CommonModule, RouterModule, FormsModule, LocationMapComponent, CommentairesReclamationComponent,InterventionsReclamationComponent],
   templateUrl: './reclamation-detail.html',
   styleUrl: './reclamation-detail.css'
 })
@@ -24,8 +26,13 @@ export class AgentReclamationDetailComponent implements OnInit {
   loading          = true;
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.charger(id);
+    // On suit le paramètre d'URL : cliquer sur une notification d'une AUTRE réclamation
+    // depuis cette même page doit recharger le dossier (le composant est réutilisé).
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      this.loading = true;
+      this.charger(id);
+    });
   }
 
   charger(id: number) {
@@ -54,10 +61,10 @@ export class AgentReclamationDetailComponent implements OnInit {
             <option value="REJETEE">❌ Rejetée</option>
           </select>
           <label style="font-size:13px;font-weight:600;color:#374151;margin-top:12px;display:block">
-            Commentaire (optionnel)
+            Motif du changement (obligatoire en cas de rejet)
           </label>
           <textarea id="swal-commentaire" class="swal2-textarea"
-            placeholder="Décrivez l'action effectuée..."
+            placeholder="Indiquez la raison du changement..."
             style="margin-top:6px;height:80px"></textarea>
         </div>
       `,
@@ -67,7 +74,11 @@ export class AgentReclamationDetailComponent implements OnInit {
       confirmButtonColor: '#16a34a',
       preConfirm: () => {
         const statut      = (document.getElementById('swal-statut') as HTMLSelectElement).value;
-        const commentaire = (document.getElementById('swal-commentaire') as HTMLTextAreaElement).value;
+        const commentaire = (document.getElementById('swal-commentaire') as HTMLTextAreaElement).value.trim();
+        if (statut === 'REJETEE' && !commentaire) {
+          Swal.showValidationMessage('Le motif est obligatoire pour rejeter une réclamation.');
+          return false;
+        }
         return { statut, commentaire };
       }
     }).then(result => {
@@ -86,6 +97,48 @@ export class AgentReclamationDetailComponent implements OnInit {
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
         });
       }
+    });
+  }
+
+  /** Vrai pour un texte écrit par le système (le mot « Motif » ne s'applique qu'aux textes saisis). */
+  estMessageSysteme(texte: string): boolean {
+    return estSysteme(texte);
+  }
+
+  /** Un dossier est clos quand il est résolu, rejeté, annulé ou fermé. */
+  get dossierClos(): boolean {
+    return ['RESOLUE', 'REJETEE', 'ANNULEE', 'FERMEE'].includes(this.reclamation?.statut);
+  }
+
+  /**
+   * Appelée quand la dernière intervention active est terminée.
+   * On PROPOSE de résoudre la réclamation (pas de changement automatique :
+   * il peut falloir une nouvelle intervention).
+   */
+  proposerResolution() {
+    if (this.reclamation?.statut !== 'EN_COURS') return;
+    // Seul l'agent responsable du dossier peut le résoudre (règle du serveur).
+    if (this.reclamation?.estResponsable === false) return;
+
+    Swal.fire({
+      title: 'Intervention terminée',
+      text: 'Il ne reste plus d\'intervention en cours. Marquer la réclamation comme résolue ?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, marquer comme résolue',
+      cancelButtonText: 'Pas maintenant',
+      confirmButtonColor: '#16a34a'
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.changerStatut(
+        this.reclamation.id, 'RESOLUE', 'Résolue à la fin des interventions.'
+      ).subscribe({
+        next: () => {
+          Swal.fire({ title: 'Réclamation résolue', icon: 'success', confirmButtonColor: '#16a34a' });
+          this.charger(this.reclamation.id);
+        },
+        error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Impossible de résoudre la réclamation.', 'error')
+      });
     });
   }
 

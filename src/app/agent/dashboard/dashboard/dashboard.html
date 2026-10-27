@@ -1,6 +1,6 @@
 <!-- En-tête -->
 <div class="mb-6">
-  <h2 class="text-2xl font-extrabold text-gray-900">Mon tableau de bord</h2>
+  <h2 class="text-2xl font-bold text-gray-900">Mon tableau de bord</h2>
   <p class="mt-1 text-sm text-gray-500" *ngIf="stats">
     Bienvenue, <span class="font-semibold text-green-700">{{ stats.agentPrenom }} {{ stats.agentNom }}</span>
     <span *ngIf="stats.serviceNom"> — Service : <strong>{{ stats.serviceNom }}</strong></span>
@@ -18,11 +18,11 @@
   <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
     <div class="flex items-center justify-between mb-2">
       <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total assignées</p>
-      <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-        <i class="fa-solid fa-file-lines text-blue-600 text-sm"></i>
+      <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center">
+        <i class="fa-solid fa-file-lines text-brand-600 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-gray-900">{{ stats.total }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.total }}</p>
   </div>
 
   <!-- En cours -->
@@ -33,7 +33,7 @@
         <i class="fa-solid fa-spinner text-orange-500 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-orange-600">{{ stats.enCours }}</p>
+    <p class="text-3xl font-bold text-orange-600">{{ stats.enCours }}</p>
   </div>
 
   <!-- Résolues -->
@@ -44,7 +44,7 @@
         <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-green-600">{{ stats.resolues }}</p>
+    <p class="text-3xl font-bold text-green-600">{{ stats.resolues }}</p>
   </div>
 
   <!-- Rejetées -->
@@ -55,13 +55,13 @@
         <i class="fa-solid fa-circle-xmark text-red-500 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-red-600">{{ stats.rejetees }}</p>
+    <p class="text-3xl font-bold text-red-600">{{ stats.rejetees }}</p>
   </div>
 
 </div>
 
 <!-- Réclamations EN_COURS -->
-<div class="bg-white rounded-2xl shadow-xl border-t-4 border-green-600 overflow-hidden">
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
 
   <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
     <div class="flex items-center gap-3">
@@ -69,7 +69,7 @@
         <i class="fa-solid fa-spinner text-orange-500 text-sm"></i>
       </div>
       <div>
-        <h3 class="text-base font-extrabold text-gray-900">Réclamations en cours</h3>
+        <h3 class="text-base font-bold text-gray-900">Réclamations en cours</h3>
         <p class="text-xs text-gray-400">Vos 5 réclamations actives les plus récentes</p>
       </div>
     </div>
@@ -100,25 +100,35 @@
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Affectée le</th>
         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
       <tr *ngFor="let r of reclamations" class="hover:bg-gray-50 transition-colors">
         <td class="px-6 py-4">
-          <span class="font-mono text-xs text-blue-600">{{ r.reference }}</span>
+          <span class="font-mono text-xs text-brand-600 whitespace-nowrap">{{ r.reference }}</span>
         </td>
         <td class="px-6 py-4 font-medium text-gray-900 max-w-xs truncate">{{ r.titre }}</td>
         <td class="px-6 py-4 text-gray-500 text-xs">{{ r.citoyen?.prenom }} {{ r.citoyen?.nom }}</td>
         <td class="px-6 py-4">
             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
                   [class]="getPrioriteBadge(r.priorite)">
-              {{ r.priorite }}
+              {{ r.priorite | prioriteLibelle }}
             </span>
         </td>
         <td class="px-6 py-4 text-xs text-gray-400">
-          {{ r.dateAffectation | date:'dd/MM/yyyy' }}
+          <ng-container *ngIf="r.dateAffectation; else viaInterventionTpl">
+            {{ r.dateAffectation | date:'dd/MM/yyyy' }}
+          </ng-container>
+          <!-- Pas d'affectation principale : l'agent voit ce dossier grâce à une intervention -->
+          <ng-template #viaInterventionTpl>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600 border border-brand-100"
+                  title="Accès via une intervention confiée, sans affectation principale">
+              <i class="fa-solid fa-screwdriver-wrench mr-1"></i>
+              Intervention
+            </span>
+          </ng-template>
         </td>
         <td class="px-6 py-4">
           <a [routerLink]="['/agent/mes-reclamations', r.id]"

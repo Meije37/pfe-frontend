@@ -136,7 +136,7 @@ export class ServicesListComponent implements OnInit {
     if (this.editMode && this.editId) {
       this.service.update(this.editId, data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Service modifié avec succès.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Service modifié avec succès.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur lors de la modification.', 'error')
@@ -144,7 +144,7 @@ export class ServicesListComponent implements OnInit {
     } else {
       this.service.create(data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Service créé avec succès.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Service créé avec succès.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur lors de la création.', 'error')
@@ -160,7 +160,7 @@ export class ServicesListComponent implements OnInit {
       text: `Le service "${s.nom}" sera ${action === 'activer' ? 'activé' : 'désactivé'}.`,
       icon: 'warning', showCancelButton: true,
       confirmButtonText: libelle, cancelButtonText: 'Annuler',
-      confirmButtonColor: s.actif ? '#dc2626' : '#1d4ed8'
+      confirmButtonColor: s.actif ? '#dc2626' : '#0e6b45'
     }).then(result => {
       if (result.isConfirmed) {
       this.service.update(s.id, {
@@ -171,7 +171,7 @@ export class ServicesListComponent implements OnInit {
         actif: !s.actif
       }).subscribe({
           next: () => {
-            Swal.fire({ title: 'Succès !', text: `Service ${action === 'activer' ? 'activé' : 'désactivé'}.`, icon: 'success', confirmButtonColor: '#1d4ed8' });
+            Swal.fire({ title: 'Succès !', text: `Service ${action === 'activer' ? 'activé' : 'désactivé'}.`, icon: 'success', confirmButtonColor: '#0e6b45' });
             this.charger();
           },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
@@ -190,7 +190,7 @@ export class ServicesListComponent implements OnInit {
       if (result.isConfirmed) {
         this.service.delete(s.id).subscribe({
           next: () => {
-            Swal.fire({ title: 'Supprimé !', text: 'Service supprimé.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+            Swal.fire({ title: 'Supprimé !', text: 'Service supprimé.', icon: 'success', confirmButtonColor: '#0e6b45' });
             this.charger();
           },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Impossible de supprimer ce service.', 'error')

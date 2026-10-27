@@ -11,7 +11,7 @@ function sessionExpiree(router: Router, authService: AuthService) {
     title: 'Session expirée',
     text: 'Votre session a expiré. Veuillez vous reconnecter.',
     icon: 'warning',
-    confirmButtonColor: '#1d4ed8'
+    confirmButtonColor: '#0e6b45'
   });
   router.navigate(['/login']);
   return of(false);

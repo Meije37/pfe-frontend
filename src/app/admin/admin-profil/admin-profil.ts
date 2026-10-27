@@ -78,7 +78,7 @@ export class AdminProfilComponent implements OnInit {
           title: 'Succès !',
           text: 'Profil mis à jour.',
           icon: 'success',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         });
         this.chargerProfil();
       },

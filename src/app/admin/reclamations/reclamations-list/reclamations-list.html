@@ -1,23 +1,23 @@
 <!-- Titre page -->
 <div class="mb-6">
-  <h2 class="text-2xl font-extrabold text-gray-900">Réclamations</h2>
+  <h2 class="text-2xl font-bold text-gray-900">Réclamations</h2>
   <p class="mt-1 text-sm text-gray-500">Gérez et suivez toutes les réclamations citoyennes</p>
 </div>
 
 <!-- ========== BARRE FILTRES ========== -->
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+<div class="bg-white rounded-2xl border border-gray-200 p-4 mb-6">
   <div class="flex flex-wrap items-center gap-3">
 
     <!-- Icône filtre -->
-    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-brand-700 text-sm"></i>
     </div>
 
     <!-- Filtre Statut -->
     <select
       [(ngModel)]="filtreStatut"
       (change)="filtrePriorite = ''; charger()"
-      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white cursor-pointer">
       <option value="">Tous les statuts</option>
       <option *ngFor="let s of statuts.slice(1)" [value]="s">{{ s }}</option>
     </select>
@@ -26,7 +26,7 @@
     <select
       [(ngModel)]="filtrePriorite"
       (change)="filtreStatut = ''; charger()"
-      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer">
+      class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white cursor-pointer">
       <option value="">Toutes les priorités</option>
       <option *ngFor="let p of priorites.slice(1)" [value]="p">{{ p }}</option>
     </select>
@@ -62,7 +62,7 @@
     (ngModelChange)="filtrer()"
     placeholder="Rechercher par référence, titre, citoyen, catégorie, ville..."
     class="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900
-           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500
            shadow-sm transition-all">
 
   <!-- Bouton effacer (visible si texte) -->
@@ -87,7 +87,7 @@
   </button>
 </div>
 <!-- ========== TABLEAU ========== -->
-<div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
 
   <!-- Loading skeleton -->
   <div *ngIf="loading" class="p-6 space-y-3">
@@ -100,27 +100,88 @@
     <table class="w-full text-sm">
       <thead>
       <tr class="bg-gray-50 border-b border-gray-100">
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
-        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('reference')">
+          <button type="button" (click)="trier('reference')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par référence">
+            Référence
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('reference')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('titre')">
+          <button type="button" (click)="trier('titre')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par titre">
+            Titre
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('titre')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('citoyen')">
+          <button type="button" (click)="trier('citoyen')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par citoyen">
+            Citoyen
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('citoyen')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('categorie')">
+          <button type="button" (click)="trier('categorie')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par catégorie">
+            Catégorie
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('categorie')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('priorite')">
+          <button type="button" (click)="trier('priorite')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par priorité (critique en premier)">
+            Priorité
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('priorite')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('statut')">
+          <button type="button" (click)="trier('statut')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par statut (ordre du cycle de traitement)">
+            Statut
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('statut')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('score')">
+          <button type="button" (click)="trier('score')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par score d'urgence">
+            Score IA
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('score')"></i>
+          </button>
+        </th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" [attr.aria-sort]="ariaTri('date')">
+          <button type="button" (click)="trier('date')"
+                  class="inline-flex items-center gap-1 uppercase tracking-wider hover:text-gray-800 cursor-pointer"
+                  title="Trier par date de création">
+            Créée le
+            <i class="fa-solid text-[10px]" [ngClass]="iconeTri('date')"></i>
+          </button>
+        </th>
         <th class="sticky right-0 bg-gray-50 text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Actions</th>
       </tr>
       </thead>
 
       <tbody class="divide-y divide-gray-100">
 
-      <tr *ngFor="let rec of reclamationsPaginees"
-          class="group hover:bg-gray-50 transition-colors">
+      <tr *ngFor="let rec of reclamationsPaginees; trackBy: suivre"
+          class="group hover:bg-gray-50 transition-colors"
+          [class.bg-amber-50]="nouvelles.has(rec.id)">
 
         <!-- Référence -->
         <td class="px-4 py-4">
-            <span class="font-mono text-xs text-blue-700 font-semibold">
+            <span class="font-mono text-xs text-brand-700 font-semibold whitespace-nowrap">
               {{ rec.reference }}
+            </span>
+          <span *ngIf="nouvelles.has(rec.id)"
+                class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">
+              Nouveau
             </span>
         </td>
 
@@ -142,8 +203,8 @@
         <!-- Citoyen -->
         <td class="px-4 py-4">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
-              {{ rec.citoyen?.prenom?.charAt(0) }}{{ rec.citoyen?.nom?.charAt(0) }}
+            <div class="w-7 h-7 rounded-full bg-brand-100 text-brand-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              {{ ((rec.citoyen?.prenom?.charAt(0) ?? '') + (rec.citoyen?.nom?.charAt(0) ?? '')) | uppercase }}
             </div>
             <div>
               <p class="text-xs font-medium text-gray-700">{{ rec.citoyen?.prenom }} {{ rec.citoyen?.nom }}</p>
@@ -163,7 +224,7 @@
         <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   [class]="getPrioriteBadge(rec.priorite)">
-              {{ rec.priorite }}
+              {{ rec.priorite | prioriteLibelle }}
             </span>
         </td>
 
@@ -171,7 +232,7 @@
         <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   [class]="getStatutBadge(rec.statut)">
-              {{ rec.statut }}
+              {{ rec.statut | statutLibelle }}
             </span>
         </td>
 
@@ -208,7 +269,7 @@
               [title]="rec.statut === 'RESOLUE' ? 'Réclamation résolue : statut verrouillé' : 'Changer le statut'"
               [class]="rec.statut === 'RESOLUE'
                 ? 'w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
-                : 'w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200'">
+                : 'w-8 h-8 flex items-center justify-center rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors cursor-pointer border border-brand-200'">
               <i class="fa-solid fa-pen-to-square text-xs"></i>
             </button>
             <a [routerLink]="['/admin/reclamations', rec.id]"
@@ -231,7 +292,7 @@
             [title]="recherche ? 'Aucun résultat pour &quot;' + recherche + '&quot;' : 'Aucune réclamation trouvée'"
             [subtitle]="recherche ? 'Essayez un autre terme de recherche' : 'Essayez de modifier vos filtres'">
             <button (click)="recherche ? resetRecherche() : reinitialiser()"
-                    class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+                    class="mt-4 px-4 py-2 text-sm text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors cursor-pointer">
               {{ recherche ? 'Effacer la recherche' : 'Réinitialiser les filtres' }}
             </button>
           </app-list-state>

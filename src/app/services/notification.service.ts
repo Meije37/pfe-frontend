@@ -10,6 +10,8 @@ export interface NotificationDTO {
   type: string;
   lu: boolean;
   dateEnvoi: string;
+  /** Réclamation concernée (null si aucune) : sert à naviguer et à rafraîchir les pages ouvertes. */
+  reclamationId?: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

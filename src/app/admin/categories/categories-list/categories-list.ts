@@ -124,7 +124,7 @@ export class CategoriesListComponent implements OnInit {
     if (this.editMode && this.editId) {
       this.service.update(this.editId, data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Catégorie modifiée.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Catégorie modifiée.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
@@ -132,7 +132,7 @@ export class CategoriesListComponent implements OnInit {
     } else {
       this.service.create(data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Catégorie créée avec succès.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Catégorie créée avec succès.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')
@@ -150,7 +150,7 @@ export class CategoriesListComponent implements OnInit {
       if (result.isConfirmed) {
         this.service.delete(cat.idCategorie).subscribe({
           next: () => {
-            Swal.fire({ title: 'Supprimée !', icon: 'success', confirmButtonColor: '#1d4ed8' });
+            Swal.fire({ title: 'Supprimée !', icon: 'success', confirmButtonColor: '#0e6b45' });
             this.charger();
           },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur.', 'error')

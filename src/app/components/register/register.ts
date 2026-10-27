@@ -39,7 +39,7 @@ registerForm = this.fb.group({
             text: 'Votre compte a été créé avec succès.',
             icon: 'success',
             confirmButtonText: 'Aller à la connexion',
-            confirmButtonColor: '#1d4ed8', // Bleu assorti à ton bouton
+            confirmButtonColor: '#0e6b45', // Bleu assorti à ton bouton
           }).then((result) => {
             if (result.isConfirmed) {
               this.router.navigate(['/login']);

@@ -29,7 +29,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           title: 'Session expirée',
           text: 'Votre session a expiré. Veuillez vous reconnecter.',
           icon: 'warning',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         });
         router.navigate(['/login']);
       } else if (error.status === 403) {
@@ -38,7 +38,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           title: 'Accès refusé',
           text: error.error?.message || "Vous n'avez pas les droits nécessaires pour cette action.",
           icon: 'error',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         });
       }
 

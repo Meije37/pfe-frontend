@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { PrioriteLibellePipe, StatutLibellePipe } from '../../../shared/pipes/libelles';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,17 +7,28 @@ import { AgentService } from '../../../services/agent.service';
 import { PaginationComponent } from '../../../shared/pagination/pagination';
 import { ListStateComponent } from '../../../shared/list-state/list-state';
 import Swal from 'sweetalert2';
+import { ColonneTri, SensTri, sensInitial, trierReclamations } from '../../../shared/tri-reclamations';
+import { Subscription, interval } from 'rxjs';
+import { NotificationWebSocketService } from '../../../services/notification-websocket.service';
 
 
 
 @Component({
   selector: 'app-mes-reclamations',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PaginationComponent, ListStateComponent],
+  imports: [PrioriteLibellePipe, StatutLibellePipe, CommonModule, RouterModule, FormsModule, PaginationComponent, ListStateComponent],
   templateUrl: './mes-reclamations.html',
   styleUrl: './mes-reclamations.css'
 })
-export class MesReclamationsComponent implements OnInit {
+export class MesReclamationsComponent implements OnInit, OnDestroy {
+  private notificationWs = inject(NotificationWebSocketService);
+  private wsSub?: Subscription;
+  private sondage?: Subscription;
+  private minuteur?: ReturnType<typeof setTimeout>;
+
+  /** Réclamations apparues lors d'un rafraîchissement automatique : mises en évidence quelques secondes. */
+  nouvelles = new Set<number>();
+
 
   private service = inject(AgentService);
 
@@ -25,25 +37,97 @@ export class MesReclamationsComponent implements OnInit {
   erreur              = false;
   filtreStatut        = '';
   recherche    = '';
+  // Tri : par défaut, plus récentes d'abord. Chaque en-tête de colonne est cliquable.
+  triColonne: ColonneTri = 'date';
+  triSens: SensTri = 'desc';
 currentPage  = 1;
 itemsPerPage = 10;
-  ngOnInit() { this.charger(); }
+  ngOnInit() {
+    this.charger();
+    this.ecouterMisesAJour();
+  }
 
-  charger() {
-    this.loading = true;
-    this.erreur  = false;
+  /** Écoute les notifications (dépôt, assignation, changement de statut…) et recharge la liste. */
+  private ecouterMisesAJour() {
+    this.wsSub = this.notificationWs.notifications$.subscribe(notif => {
+      if (notif.reclamationId) {
+        clearTimeout(this.minuteur);
+        // Léger délai : la notification part avant la fin de l'enregistrement côté serveur.
+        this.minuteur = setTimeout(() => this.charger(true), 500);
+      }
+    });
+    // Filet de sécurité si le WebSocket est coupé : rafraîchissement toutes les 20 s (onglet visible).
+    this.sondage = interval(20000).subscribe(() => {
+      if (!document.hidden) this.charger(true);
+    });
+  }
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+    this.sondage?.unsubscribe();
+    clearTimeout(this.minuteur);
+  }
+
+  suivre(_index: number, r: any): number {
+    return r.id;
+  }
+
+  /** Met en évidence (8 s) les réclamations qui n'étaient pas dans la liste avant le rafraîchissement. */
+  private signalerNouvelles(avant: Set<number>) {
+    if (avant.size === 0) return;
+    const ajoutees = this.reclamations.filter(r => !avant.has(r.id)).map(r => r.id);
+    if (ajoutees.length === 0) return;
+    ajoutees.forEach(id => this.nouvelles.add(id));
+    setTimeout(() => ajoutees.forEach(id => this.nouvelles.delete(id)), 8000);
+  }
+
+  /** @param silencieux true = rafraîchissement automatique : pas d'écran de chargement, de retour page 1 ni de pop-up d'erreur. */
+  charger(silencieux = false) {
+    if (!silencieux) {
+      this.loading = true;
+      this.erreur  = false;
+    }
     this.service.getMesReclamations().subscribe({
       next: (data: any[]) => {
+        const avant = new Set<number>(this.reclamations.map(r => r.id));
         this.reclamations = data;
-        this.currentPage = 1;
+        this.appliquerTri();
+        if (!silencieux) this.currentPage = 1; // un rafraîchissement automatique garde la page courante
         this.loading = false;
+        if (silencieux) this.signalerNouvelles(avant);
       },
       error: () => {
         this.loading = false;
+        if (silencieux) return; // pas de pop-up toutes les 20 s si le réseau coupe
         this.erreur  = true;
         Swal.fire('Erreur', 'Impossible de charger vos réclamations.', 'error');
       }
     });
+  }
+
+  trier(colonne: ColonneTri) {
+    if (this.triColonne === colonne) {
+      this.triSens = this.triSens === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.triColonne = colonne;
+      this.triSens = sensInitial(colonne);
+    }
+    this.appliquerTri();
+    this.currentPage = 1;
+  }
+
+  private appliquerTri() {
+    this.reclamations = trierReclamations(this.reclamations, this.triColonne, this.triSens);
+  }
+
+  iconeTri(colonne: ColonneTri): string {
+    if (this.triColonne !== colonne) return 'fa-sort text-gray-300';
+    return this.triSens === 'asc' ? 'fa-arrow-up text-green-600' : 'fa-arrow-down text-green-600';
+  }
+
+  ariaTri(colonne: ColonneTri): string {
+    if (this.triColonne !== colonne) return 'none';
+    return this.triSens === 'asc' ? 'ascending' : 'descending';
   }
 
   onFiltreChange() {

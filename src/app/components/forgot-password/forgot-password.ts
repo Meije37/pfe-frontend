@@ -57,7 +57,7 @@ export class ForgotPasswordComponent {
           title: 'Code envoyé',
           text: res?.message ?? 'Vérifiez votre boîte email.',
           icon: 'success',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         });
       },
       error: () => {
@@ -95,7 +95,7 @@ export class ForgotPasswordComponent {
           title: 'Mot de passe mis à jour !',
           text: 'Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.',
           icon: 'success',
-          confirmButtonColor: '#1d4ed8'
+          confirmButtonColor: '#0e6b45'
         }).then(() => this.router.navigate(['/login']));
       },
       error: (err) => {

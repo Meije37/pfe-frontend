@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+/* Les gabarits des composants sont analysés par cette feuille globale :
+   les classes utilitaires sont générées une seule fois, ici. */
+@source "./app";
+
+/* ══════════════════════════════════════════════════════════════════════
+   Charte « Chikayti · شكايتي » — espace administration & agents
+   ──────────────────────────────────────────────────────────────────────
+   - brand-*  : vert institutionnel (actions, liens, navigation active).
+   - flag-*   : couleurs nationales, réservées au filet du bandeau.
+   - Les statuts gardent leurs couleurs Tailwind : bleu = ouverte,
+     orange/amber = en cours, vert = résolue, rouge = rejetée/urgente.
+   ══════════════════════════════════════════════════════════════════════ */
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
+
+  --color-brand-50:  #f3f9f5;
+  --color-brand-100: #e7f2ec;
+  --color-brand-200: #c9e2d4;
+  --color-brand-300: #9cc7af;
+  --color-brand-400: #5fa47f;
+  --color-brand-500: #2b8559;
+  --color-brand-600: #12754b;
+  --color-brand-700: #0e6b45;
+  --color-brand-800: #0a4a31;
+  --color-brand-900: #0a3d2a;
+  --color-brand-950: #062619;
+
+  --color-flag-red:   #c8102e;
+  --color-flag-green: #0e6b45;
+  --color-flag-gold:  #d4a017;
+}
+
 /* Empêche toute barre de défilement horizontale accidentelle sur la page,
    quelle que soit la cause exacte (grille trop large, contenu qui déborde,
    etc.). Les zones qui ont VRAIMENT besoin de défiler horizontalement
@@ -9,3 +42,47 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-gray-900);
+  background: #f5f7f6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Chiffres alignés dans les tableaux, compteurs et références. */
+.tabular-nums, table { font-variant-numeric: tabular-nums; }
+
+/* Filet tricolore du bandeau officiel. */
+.national-stripe {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--color-flag-red) 0 6.66%,
+    var(--color-flag-green) 6.66% 46.66%,
+    var(--color-flag-gold) 46.66% 53.33%,
+    var(--color-flag-green) 53.33% 93.33%,
+    var(--color-flag-red) 93.33% 100%
+  );
+}
+
+/* Focus clavier visible et cohérent partout. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}
+
+/* Champs remplis automatiquement par le navigateur : fond blanc au lieu du bleu clair. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: var(--color-gray-900);
+  caret-color: var(--color-gray-900);
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* SweetAlert2 aux couleurs de la charte. */
+.swal2-popup { font-family: var(--font-sans) !important; border-radius: 16px !important; }
+.swal2-styled.swal2-confirm { background-color: var(--color-brand-700) !important; border-radius: 10px !important; }
+.swal2-styled.swal2-cancel { border-radius: 10px !important; }

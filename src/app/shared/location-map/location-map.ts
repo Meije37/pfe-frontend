@@ -27,10 +27,12 @@ export class LocationMapComponent implements AfterViewInit, OnChanges, OnDestroy
   private previewInstance: any;
   private fullInstance: any;
 
+  // OpenStreetMap standard : gratuit, sans clé API. (CARTO « voyager » exige maintenant
+  // une clé, d'où le filigrane « API KEY REQUIRED ».)
   private static readonly TILE_URL =
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   private static readonly ATTRIBUTION =
-    '&copy; OpenStreetMap &copy; CARTO';
+    '&copy; OpenStreetMap contributors';
 
   ngAfterViewInit(): void {
     this.initPreviewMap();
@@ -77,7 +79,7 @@ export class LocationMapComponent implements AfterViewInit, OnChanges, OnDestroy
     });
 
     L.tileLayer(LocationMapComponent.TILE_URL, {
-      subdomains: 'abcd',
+      subdomains: 'abc',
       attribution: LocationMapComponent.ATTRIBUTION
     }).addTo(this.previewInstance);
 
@@ -103,7 +105,7 @@ export class LocationMapComponent implements AfterViewInit, OnChanges, OnDestroy
       });
 
       L.tileLayer(LocationMapComponent.TILE_URL, {
-        subdomains: 'abcd',
+        subdomains: 'abc',
         attribution: LocationMapComponent.ATTRIBUTION
       }).addTo(this.fullInstance);
 

@@ -1,11 +1,11 @@
 <!-- Titre page -->
 <div class="mb-6 flex items-center justify-between">
   <div>
-    <h2 class="text-2xl font-extrabold text-gray-900">Catégories</h2>
+    <h2 class="text-2xl font-bold text-gray-900">Catégories</h2>
     <p class="mt-1 text-sm text-gray-500">Gérez les catégories de réclamations citoyennes</p>
   </div>
   <button (click)="ouvrirCreation()"
-          class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+          class="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white text-sm font-bold rounded-lg hover:bg-brand-800 transition-all cursor-pointer">
     <i class="fa-solid fa-plus text-xs"></i>
     Nouvelle catégorie
   </button>
@@ -22,7 +22,7 @@
     (ngModelChange)="onRechercheChange()"
     placeholder="Rechercher par nom ou description..."
     class="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900
-           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500
            shadow-sm transition-all">
   <button *ngIf="recherche"
           (click)="resetRecherche()"
@@ -46,15 +46,15 @@
 <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
   <div *ngFor="let cat of categoriesPagineees"
-       class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
+       class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
 
     <!-- Header card -->
     <div class="flex items-start justify-between gap-3">
-      <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-tag text-blue-700 text-sm"></i>
+      <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-tag text-brand-700 text-sm"></i>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="font-extrabold text-gray-900 truncate">{{ cat.nom }}</h3>
+        <h3 class="font-bold text-gray-900 truncate">{{ cat.nom }}</h3>
         <p class="text-xs text-gray-400 mt-0.5">ID : {{ cat.idCategorie }}</p>
       </div>
       <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold flex-shrink-0"
@@ -71,7 +71,7 @@
     <!-- Badge service responsable (affichage seulement, pas de select ici) -->
     <div>
       <span *ngIf="cat.serviceNom"
-            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
         <i class="fa-solid fa-building-columns text-xs"></i>
         {{ cat.serviceNom }}
       </span>
@@ -91,7 +91,7 @@
       </div>
       <div class="flex items-center gap-2">
         <button (click)="ouvrirEdition(cat)" title="Modifier"
-                class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+                class="w-8 h-8 flex items-center justify-center rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors cursor-pointer border border-brand-200">
           <i class="fa-solid fa-pen-to-square text-xs"></i>
         </button>
         <button (click)="supprimer(cat)" title="Supprimer"
@@ -110,11 +110,11 @@
       {{ recherche ? 'Aucun résultat pour "' + recherche + '"' : 'Aucune catégorie trouvée' }}
     </p>
     <button *ngIf="recherche" (click)="resetRecherche()"
-            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+            class="mt-4 px-4 py-2 text-sm text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors cursor-pointer">
       Effacer la recherche
     </button>
     <button *ngIf="!recherche" (click)="ouvrirCreation()"
-            class="mt-4 px-4 py-2 text-sm text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
+            class="mt-4 px-4 py-2 text-sm text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors cursor-pointer">
       Créer la première catégorie
     </button>
   </div>
@@ -134,11 +134,11 @@
 <div *ngIf="showModal"
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
 
-  <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm w-full max-w-md p-8 space-y-6 max-h-[90vh] overflow-y-auto">
 
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-xl font-extrabold text-gray-900">
+        <h3 class="text-xl font-bold text-gray-900">
           {{ editMode ? 'Modifier la catégorie' : 'Nouvelle catégorie' }}
         </h3>
         <p class="text-sm text-gray-500 mt-1">
@@ -159,7 +159,7 @@
           Nom de la catégorie <span class="text-red-500">*</span>
         </label>
         <input formControlName="nom" type="text"
-               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                placeholder="Ex: Voirie, Eau & Assainissement...">
         <p *ngIf="form.get('nom')?.invalid && form.get('nom')?.touched"
            class="text-red-500 text-xs mt-1">Le nom est obligatoire</p>
@@ -171,7 +171,7 @@
           Description <span class="text-red-500">*</span>
         </label>
         <textarea formControlName="description" rows="3"
-                  class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-none"
+                  class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm resize-none"
                   placeholder="Décrivez les types de problèmes couverts..."></textarea>
         <p *ngIf="form.get('description')?.invalid && form.get('description')?.touched"
            class="text-red-500 text-xs mt-1">La description est obligatoire</p>
@@ -199,13 +199,13 @@
           <span class="text-gray-400 font-normal">(active l'assignation automatique)</span>
         </label>
         <select formControlName="serviceId"
-                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white">
+                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm bg-white">
           <option [ngValue]="null">-- Aucun (assignation manuelle) --</option>
           <option *ngFor="let s of services" [ngValue]="s.id">
             {{ s.nom }}
           </option>
         </select>
-        <p class="text-xs text-blue-600 mt-1">
+        <p class="text-xs text-brand-600 mt-1">
           <i class="fa-solid fa-bolt mr-1"></i>
           Si un service est lié, les réclamations seront auto-assignées à l'agent le moins chargé.
         </p>
@@ -218,7 +218,7 @@
           Annuler
         </button>
         <button type="submit" [disabled]="form.invalid"
-                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
+                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-brand-700 hover:bg-brand-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
           {{ editMode ? 'Modifier' : 'Créer' }}
         </button>
       </div>

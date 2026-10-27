@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { PrioriteLibellePipe, StatutLibellePipe } from '../../../shared/pipes/libelles';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -6,16 +7,26 @@ import { AdminReclamationService } from '../../../services/admin-reclamation.ser
 import Swal from 'sweetalert2';
 import { PaginationComponent } from '../../../shared/pagination/pagination';
 import { ListStateComponent } from '../../../shared/list-state/list-state';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, interval } from 'rxjs';
+import { NotificationWebSocketService } from '../../../services/notification-websocket.service';
+import { ColonneTri, SensTri, sensInitial, trierReclamations } from '../../../shared/tri-reclamations';
 
 @Component({
   selector: 'app-reclamations-list',
   standalone: true,
- imports: [CommonModule, FormsModule, RouterModule,PaginationComponent, ListStateComponent],
+ imports: [PrioriteLibellePipe, StatutLibellePipe, CommonModule, FormsModule, RouterModule,PaginationComponent, ListStateComponent],
   templateUrl: './reclamations-list.html',
   styleUrl: './reclamations-list.css'
 })
-export class ReclamationsListComponent implements OnInit {
+export class ReclamationsListComponent implements OnInit, OnDestroy {
+  private notificationWs = inject(NotificationWebSocketService);
+  private wsSub?: Subscription;
+  private sondage?: Subscription;
+  private minuteur?: ReturnType<typeof setTimeout>;
+
+  /** Réclamations apparues lors d'un rafraîchissement automatique : mises en évidence quelques secondes. */
+  nouvelles = new Set<number>();
+
 
   private service = inject(AdminReclamationService);
   private route   = inject(ActivatedRoute);
@@ -39,20 +50,98 @@ export class ReclamationsListComponent implements OnInit {
   ngOnInit() {
     // Arrivée depuis le widget "Réclamations urgentes" du dashboard
     if (this.route.snapshot.queryParamMap.get('tri') === 'urgence') {
+      this.triColonne = 'score';
+      this.triSens = 'desc';
       this.triUrgence = true;
     }
     this.charger();
+    this.ecouterMisesAJour();
+  }
+
+  // Tri : par défaut, plus récentes d'abord. Chaque en-tête de colonne est cliquable.
+  triColonne: ColonneTri = 'date';
+  triSens: SensTri = 'desc';
+
+  trier(colonne: ColonneTri) {
+    if (this.triColonne === colonne) {
+      this.triSens = this.triSens === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.triColonne = colonne;
+      this.triSens = sensInitial(colonne);
+    }
+    this.appliquerTri();
+    this.currentPage = 1;
+  }
+
+  private appliquerTri() {
+    this.reclamations = trierReclamations(this.reclamations, this.triColonne, this.triSens);
+    // Le bouton « Urgence » correspond au tri par score décroissant.
+    this.triUrgence = this.triColonne === 'score' && this.triSens === 'desc';
+  }
+
+  iconeTri(colonne: ColonneTri): string {
+    if (this.triColonne !== colonne) return 'fa-sort text-gray-300';
+    return this.triSens === 'asc' ? 'fa-arrow-up text-brand-600' : 'fa-arrow-down text-brand-600';
+  }
+
+  ariaTri(colonne: ColonneTri): string {
+    if (this.triColonne !== colonne) return 'none';
+    return this.triSens === 'asc' ? 'ascending' : 'descending';
   }
 
   toggleTriUrgence() {
-    this.triUrgence = !this.triUrgence;
+    if (this.triUrgence) {
+      this.triColonne = 'date';
+      this.triSens = 'desc';
+    } else {
+      this.triColonne = 'score';
+      this.triSens = 'desc';
+    }
+    this.appliquerTri();
     this.currentPage = 1;
   }
 
   // ---- Chargement selon filtres actifs ----
-  charger() {
-    this.loading = true;
-    this.erreur = false;
+  /** Écoute les notifications (dépôt, assignation, changement de statut…) et recharge la liste. */
+  private ecouterMisesAJour() {
+    this.wsSub = this.notificationWs.notifications$.subscribe(notif => {
+      if (notif.reclamationId) {
+        clearTimeout(this.minuteur);
+        // Léger délai : la notification part avant la fin de l'enregistrement côté serveur.
+        this.minuteur = setTimeout(() => this.charger(true), 500);
+      }
+    });
+    // Filet de sécurité si le WebSocket est coupé : rafraîchissement toutes les 20 s (onglet visible).
+    this.sondage = interval(20000).subscribe(() => {
+      if (!document.hidden) this.charger(true);
+    });
+  }
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+    this.sondage?.unsubscribe();
+    clearTimeout(this.minuteur);
+  }
+
+  suivre(_index: number, r: any): number {
+    return r.id;
+  }
+
+  /** Met en évidence (8 s) les réclamations qui n'étaient pas dans la liste avant le rafraîchissement. */
+  private signalerNouvelles(avant: Set<number>) {
+    if (avant.size === 0) return;
+    const ajoutees = this.reclamations.filter(r => !avant.has(r.id)).map(r => r.id);
+    if (ajoutees.length === 0) return;
+    ajoutees.forEach(id => this.nouvelles.add(id));
+    setTimeout(() => ajoutees.forEach(id => this.nouvelles.delete(id)), 8000);
+  }
+
+  /** @param silencieux true = rafraîchissement automatique : pas d'écran de chargement ni de pop-up d'erreur. */
+  charger(silencieux = false) {
+    if (!silencieux) {
+      this.loading = true;
+      this.erreur = false;
+    }
 
     let obs;
     if (this.filtreStatut) {
@@ -65,11 +154,15 @@ export class ReclamationsListComponent implements OnInit {
 
     obs.subscribe({
       next: (data) => {
+        const avant = new Set<number>(this.reclamations.map(r => r.id));
         this.reclamations = data;
+        this.appliquerTri();
         this.loading = false;
+        if (silencieux) this.signalerNouvelles(avant);
       },
       error: () => {
         this.loading = false;
+        if (silencieux) return; // pas de pop-up toutes les 20 s si le réseau coupe
         this.erreur = true;
         Swal.fire('Erreur', 'Impossible de charger les réclamations.', 'error');
       }
@@ -101,30 +194,51 @@ export class ReclamationsListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Confirmer',
       cancelButtonText: 'Annuler',
-      confirmButtonColor: '#1d4ed8',
+      confirmButtonColor: '#0e6b45',
       inputValidator: (value) => {
         if (!value) return 'Veuillez choisir un statut';
         return null;
       }
-    }).then(result => {
-      if (result.isConfirmed && result.value) {
-        this.service.changerStatut(rec.id, result.value).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Succès !',
-              text: 'Statut mis à jour avec succès.',
-              icon: 'success',
-              confirmButtonColor: '#1d4ed8'
-            });
-            this.charger();
-          },
-          error: (err) => {
-            Swal.fire('Erreur', err.error?.message || 'Erreur lors de la mise à jour.', 'error');
-          }
-        });
-      }
-    });
-  }
+
+      }).then(result => {
+        if (!result.isConfirmed || !result.value) return;
+
+        // Un rejet doit toujours être expliqué au citoyen : on demande le motif.
+        if (result.value === 'REJETEE') {
+          Swal.fire({
+            title: 'Motif du rejet',
+            input: 'textarea',
+            inputPlaceholder: 'Expliquez au citoyen pourquoi sa réclamation est rejetée...',
+            showCancelButton: true,
+            confirmButtonText: 'Rejeter',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#dc2626',
+            inputValidator: (motif) => (!motif || !motif.trim()) ? 'Le motif est obligatoire' : null
+          }).then(r2 => {
+            if (r2.isConfirmed && r2.value) this.envoyerChangementStatut(rec.id, 'REJETEE', r2.value.trim());
+          });
+        } else {
+          this.envoyerChangementStatut(rec.id, result.value);
+        }
+      });
+    }
+
+    private envoyerChangementStatut(id: number, statut: string, commentaire?: string) {
+      this.service.changerStatut(id, statut, commentaire).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'Succès !',
+            text: 'Statut mis à jour avec succès.',
+            icon: 'success',
+            confirmButtonColor: '#0e6b45'
+          });
+          this.charger();
+        },
+        error: (err) => {
+          Swal.fire('Erreur', err.error?.message || 'Erreur lors de la mise à jour.', 'error');
+        }
+      });
+    }
 
   // ---- Badges couleur priorité ----
   getPrioriteBadge(priorite: string): string {
@@ -193,10 +307,6 @@ get reclamationsFiltrees(): any[] {
       r.localisation?.ville?.toLowerCase().includes(terme) ||
       r.localisation?.quartier?.toLowerCase().includes(terme)
     );
-  }
-
-  if (this.triUrgence) {
-    liste = [...liste].sort((a, b) => (b.scoreUrgence ?? 0) - (a.scoreUrgence ?? 0));
   }
 
   return liste;

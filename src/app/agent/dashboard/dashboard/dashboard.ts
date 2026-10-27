@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { PrioriteLibellePipe } from '../../../shared/pipes/libelles';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AgentService } from '../../../services/agent.service';
@@ -7,7 +8,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [PrioriteLibellePipe, CommonModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

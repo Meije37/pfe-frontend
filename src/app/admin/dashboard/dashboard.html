@@ -1,13 +1,13 @@
 <!-- Titre de la page -->
 <div class="mb-6">
-  <h2 class="text-2xl font-extrabold text-gray-900">Tableau de bord</h2>
+  <h2 class="text-2xl font-bold text-gray-900">Tableau de bord</h2>
   <p class="mt-1 text-sm text-gray-500">Vue globale de la plateforme de réclamations</p>
 </div>
 
 <!-- ========== STATS CARDS ========== -->
 <div *ngIf="loading" class="flex flex-wrap gap-5 mb-8">
   <div *ngFor="let i of [1,2,3,4]"
-       class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+       class="flex-1 min-w-[220px] bg-white rounded-2xl border border-gray-200 p-5 animate-pulse">
     <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
     <div class="h-8 bg-gray-200 rounded w-1/3"></div>
   </div>
@@ -16,50 +16,50 @@
 <div *ngIf="!loading && stats" class="flex flex-wrap gap-5 mb-8">
 
   <!-- Card : Total réclamations -->
-  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl border border-gray-200 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Total réclamations</p>
-      <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-        <i class="fa-solid fa-file-lines text-blue-700 text-sm"></i>
+      <div class="w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center">
+        <i class="fa-solid fa-file-lines text-brand-700 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-gray-900">{{ stats.nombreReclamations ?? 0 }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.nombreReclamations ?? 0 }}</p>
     <p class="text-xs text-gray-400 mt-1">Depuis le début</p>
   </div>
 
   <!-- Card : Total utilisateurs -->
-  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl border border-gray-200 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Utilisateurs</p>
       <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
         <i class="fa-solid fa-users text-green-700 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-gray-900">{{ stats.nombreUtilisateurs ?? 0 }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.nombreUtilisateurs ?? 0 }}</p>
     <p class="text-xs text-gray-400 mt-1">Citoyens inscrits</p>
   </div>
 
   <!-- Card : Total zones -->
-  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl border border-gray-200 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Zones</p>
       <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
         <i class="fa-solid fa-map-location-dot text-purple-700 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-gray-900">{{ stats.nombreZones ?? 0 }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.nombreZones ?? 0 }}</p>
     <p class="text-xs text-gray-400 mt-1">Zones couvertes</p>
   </div>
 
   <!-- Card : Total services -->
-  <div class="flex-1 min-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="flex-1 min-w-[220px] bg-white rounded-2xl border border-gray-200 p-5">
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm font-medium text-gray-500">Services</p>
       <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center">
         <i class="fa-solid fa-building-columns text-orange-700 text-sm"></i>
       </div>
     </div>
-    <p class="text-3xl font-extrabold text-gray-900">{{ stats.nombreServices ?? 0 }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.nombreServices ?? 0 }}</p>
     <p class="text-xs text-gray-400 mt-1">Services actifs</p>
   </div>
 
@@ -67,11 +67,11 @@
 
 <!-- ========== GRAPHIQUES ========== -->
 <div *ngIf="loadingCharts" class="space-y-5 mb-8">
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 animate-pulse">
     <div class="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
     <div class="h-24 bg-gray-100 rounded-lg"></div>
   </div>
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 animate-pulse">
     <div class="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
     <div class="h-64 bg-gray-100 rounded-lg"></div>
   </div>
@@ -80,10 +80,10 @@
 <div *ngIf="!loadingCharts && chartsData" class="space-y-5 mb-8">
 
   <!-- Évolution 14 jours — bande fine pleine largeur -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="bg-white rounded-2xl border border-gray-200 p-5">
     <div class="flex items-center gap-2 mb-3">
-      <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-        <i class="fa-solid fa-chart-line text-blue-700 text-xs"></i>
+      <div class="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+        <i class="fa-solid fa-chart-line text-brand-700 text-xs"></i>
       </div>
       <h3 class="text-sm font-bold text-gray-900">Réclamations créées — 14 derniers jours</h3>
     </div>
@@ -93,59 +93,86 @@
   </div>
 
   <!-- Répartitions — un seul graphique affiché à la fois, via onglets -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+  <div class="bg-white rounded-2xl border border-gray-200 p-5">
 
-    <div class="flex items-center gap-1 border-b border-gray-100 pb-3 mb-4">
-      <button (click)="changerOnglet('statut')"
-              [class]="ongletActif === 'statut'
-                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
-                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
-        <i class="fa-solid fa-chart-pie mr-1.5 text-xs"></i>Par statut
-      </button>
-      <button (click)="changerOnglet('priorite')"
-              [class]="ongletActif === 'priorite'
-                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
-                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
-        <i class="fa-solid fa-triangle-exclamation mr-1.5 text-xs"></i>Par priorité
-      </button>
-      <button (click)="changerOnglet('categorie')"
-              [class]="ongletActif === 'categorie'
-                ? 'px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition-colors cursor-pointer'
-                : 'px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer'">
-        <i class="fa-solid fa-tags mr-1.5 text-xs"></i>Par catégorie
-      </button>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <div>
+        <h3 class="text-base font-semibold text-gray-900">Répartition des réclamations</h3>
+        <p class="text-sm text-gray-500">Toutes les réclamations reçues depuis le début</p>
+      </div>
+
+      <!-- Sélecteur segmenté -->
+      <div class="inline-flex rounded-xl bg-gray-100 p-1" role="tablist" aria-label="Type de répartition">
+        <button type="button" role="tab" (click)="changerOnglet('statut')"
+                [attr.aria-selected]="ongletActif === 'statut'"
+                [class]="ongletActif === 'statut'
+                  ? 'h-9 px-4 rounded-lg text-sm font-semibold bg-white text-brand-800 shadow-sm cursor-pointer'
+                  : 'h-9 px-4 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 cursor-pointer'">
+          Par statut
+        </button>
+        <button type="button" role="tab" (click)="changerOnglet('priorite')"
+                [attr.aria-selected]="ongletActif === 'priorite'"
+                [class]="ongletActif === 'priorite'
+                  ? 'h-9 px-4 rounded-lg text-sm font-semibold bg-white text-brand-800 shadow-sm cursor-pointer'
+                  : 'h-9 px-4 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 cursor-pointer'">
+          Par priorité
+        </button>
+        <button type="button" role="tab" (click)="changerOnglet('categorie')"
+                [attr.aria-selected]="ongletActif === 'categorie'"
+                [class]="ongletActif === 'categorie'
+                  ? 'h-9 px-4 rounded-lg text-sm font-semibold bg-white text-brand-800 shadow-sm cursor-pointer'
+                  : 'h-9 px-4 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 cursor-pointer'">
+          Par catégorie
+        </button>
+      </div>
     </div>
 
-    <!-- Un seul canvas, réutilisé pour les 3 vues -->
-    <div class="relative" style="height: 320px;">
-      <canvas #repartitionCanvas></canvas>
-      <div *ngIf="ongletActif === 'statut'"
-           class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-           style="top: 40%;">
-        <span class="text-2xl font-extrabold text-gray-900">{{ stats?.nombreReclamations ?? 0 }}</span>
-        <span class="text-[11px] text-gray-400 uppercase tracking-wide">Total</span>
+    <!-- Un seul canvas, réutilisé pour les 3 vues.
+         « Par statut » : anneau à gauche + légende détaillée à droite. -->
+    <div [class]="ongletActif === 'statut'
+                  ? 'grid gap-8 items-center md:grid-cols-[280px_minmax(0,1fr)]'
+                  : 'block'">
+      <div class="relative mx-auto w-full"
+           [style.max-width.px]="ongletActif === 'statut' ? 280 : null"
+           [style.height.px]="ongletActif === 'statut' ? 280 : 300">
+        <canvas #repartitionCanvas></canvas>
       </div>
+
+      <ul *ngIf="ongletActif === 'statut'" class="divide-y divide-gray-100 min-w-0">
+        <li *ngFor="let s of legendeStatut" class="py-3 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-sm flex-shrink-0" [style.background]="s.couleur" aria-hidden="true"></span>
+            <span class="flex-1 text-sm font-medium text-gray-800">{{ s.libelle }}</span>
+            <span class="text-sm font-semibold text-gray-900 tabular-nums">{{ s.nombre }}</span>
+            <span class="w-12 text-right text-sm text-gray-500 tabular-nums">{{ s.pourcentage }} %</span>
+          </div>
+          <div class="mt-2 ml-6 h-1.5 rounded-full bg-gray-100 overflow-hidden" aria-hidden="true">
+            <div class="h-full rounded-full" [style.width.%]="s.pourcentage" [style.background]="s.couleur"></div>
+          </div>
+        </li>
+        <li *ngIf="!legendeStatut.length" class="py-6 text-sm text-gray-500">Aucune réclamation pour le moment.</li>
+      </ul>
     </div>
   </div>
 
 </div>
 
 <!-- ========== TABLEAU RECLAMATIONS URGENTES (IA) ========== -->
-<div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
 
   <!-- Header tableau -->
-  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+  <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100">
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
         <i class="fa-solid fa-triangle-exclamation text-red-600 text-sm"></i>
       </div>
       <div>
-        <h3 class="text-base font-extrabold text-gray-900">Réclamations urgentes</h3>
+        <h3 class="text-base font-bold text-gray-900">Réclamations urgentes</h3>
         <p class="text-xs text-gray-400">Triées par score IA décroissant</p>
       </div>
     </div>
     <a routerLink="/admin/reclamations" [queryParams]="{ tri: 'urgence' }"
-       class="text-sm font-medium text-blue-700 hover:text-blue-800 hover:underline transition-colors">
+       class="text-sm font-medium text-brand-700 hover:text-brand-800 hover:underline transition-colors">
       Voir tout <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
     </a>
   </div>
@@ -160,60 +187,60 @@
     <table class="w-full text-sm">
       <thead>
       <tr class="bg-gray-50 border-b border-gray-100">
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
-        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-        <th class="px-6 py-3"></th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Citoyen</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Score IA</th>
+        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+        <th class="px-4 py-3"></th>
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
       <tr *ngFor="let rec of urgentes"
           [routerLink]="['/admin/reclamations', rec.id]"
-          class="hover:bg-blue-50/50 cursor-pointer transition-colors">
+          class="hover:bg-brand-50/50 cursor-pointer transition-colors">
 
         <!-- Référence -->
-        <td class="px-6 py-4">
-          <span class="font-mono text-xs text-blue-700 font-semibold">{{ rec.reference }}</span>
+        <td class="px-4 py-4">
+          <span class="font-mono text-xs text-brand-700 font-semibold whitespace-nowrap">{{ rec.reference }}</span>
         </td>
 
         <!-- Titre -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <p class="text-gray-900 font-medium truncate max-w-xs">{{ rec.titre }}</p>
           <p class="text-xs text-gray-400 truncate max-w-xs">{{ rec.localisation?.quartier }}, {{ rec.localisation?.ville }}</p>
         </td>
 
         <!-- Citoyen -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
-              {{ rec.citoyen?.prenom?.charAt(0) }}{{ rec.citoyen?.nom?.charAt(0) }}
+            <div class="w-7 h-7 rounded-full bg-brand-100 text-brand-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              {{ (rec.citoyen?.prenom?.charAt(0) ?? '') + (rec.citoyen?.nom?.charAt(0) ?? '') | uppercase }}
             </div>
             <span class="text-gray-700 text-xs">{{ rec.citoyen?.prenom }} {{ rec.citoyen?.nom }}</span>
           </div>
         </td>
 
         <!-- Priorité badge -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                   [class]="getPrioriteBadge(rec.priorite)">
-              {{ rec.priorite }}
+              {{ rec.priorite | prioriteLibelle }}
             </span>
         </td>
 
         <!-- Statut badge -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                   [class]="getStatutBadge(rec.statut)">
-              {{ rec.statut }}
+              {{ rec.statut | statutLibelle }}
             </span>
         </td>
 
         <!-- Score IA barre -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <div class="flex items-center gap-2">
             <div class="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div class="h-1.5 rounded-full transition-all"
@@ -226,12 +253,12 @@
         </td>
 
         <!-- Date -->
-        <td class="px-6 py-4">
+        <td class="px-4 py-4">
           <span class="text-xs text-gray-400">{{ rec.dateCreation | date:'dd/MM/yyyy' }}</span>
         </td>
 
         <!-- Action -->
-        <td class="px-6 py-4 text-right">
+        <td class="px-4 py-4 text-right">
           <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
         </td>
 

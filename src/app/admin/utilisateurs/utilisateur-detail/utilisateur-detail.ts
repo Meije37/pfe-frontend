@@ -49,7 +49,7 @@ export class UtilisateurDetailComponent implements OnInit {
   getRoleBadge(role: string): string {
     const map: Record<string, string> = {
       'ADMIN':   'bg-purple-100 text-purple-700 border-purple-200',
-      'AGENT':   'bg-blue-100 text-blue-700 border-blue-200',
+      'AGENT':   'bg-brand-100 text-brand-700 border-brand-200',
       'CITOYEN': 'bg-green-100 text-green-700 border-green-200'
     };
     return map[role] ?? 'bg-gray-100 text-gray-700';

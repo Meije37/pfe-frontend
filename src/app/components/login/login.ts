@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { Router, RouterModule } from '@angular/router';
@@ -7,7 +8,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, NgIf],
   templateUrl: './login.html'
 })
 export class LoginComponent {
@@ -15,6 +16,8 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   showPassword = false;
+  chargement = false;
+  erreur: string | null = null;
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -27,8 +30,11 @@ export class LoginComponent {
 
   onLogin() {
     if (this.loginForm.valid) {
+      this.chargement = true;
+      this.erreur = null;
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
+          this.chargement = false;
           // Le token + refreshToken sont déjà stockés par AuthService.login()
 
           // Redirection selon le rôle
@@ -48,7 +54,10 @@ export class LoginComponent {
             });
           }
         },
-        error: () => alert('Identifiants invalides')
+        error: () => {
+          this.chargement = false;
+          this.erreur = 'Adresse e-mail ou mot de passe incorrect.';
+        }
       });
     }
   }

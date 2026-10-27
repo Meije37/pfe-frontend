@@ -117,7 +117,7 @@ export class ZonesListComponent implements OnInit {
     if (this.editMode && this.editId) {
       this.service.update(this.editId, data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Zone modifiée avec succès.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Zone modifiée avec succès.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur lors de la modification.', 'error')
@@ -125,7 +125,7 @@ export class ZonesListComponent implements OnInit {
     } else {
       this.service.create(data).subscribe({
         next: () => {
-          Swal.fire({ title: 'Succès !', text: 'Zone créée avec succès.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+          Swal.fire({ title: 'Succès !', text: 'Zone créée avec succès.', icon: 'success', confirmButtonColor: '#0e6b45' });
           this.fermerModal(); this.charger();
         },
         error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Erreur lors de la création.', 'error')
@@ -143,7 +143,7 @@ export class ZonesListComponent implements OnInit {
       if (result.isConfirmed) {
         this.service.delete(z.id).subscribe({
           next: () => {
-            Swal.fire({ title: 'Supprimée !', text: 'Zone supprimée.', icon: 'success', confirmButtonColor: '#1d4ed8' });
+            Swal.fire({ title: 'Supprimée !', text: 'Zone supprimée.', icon: 'success', confirmButtonColor: '#0e6b45' });
             this.charger();
           },
           error: (err: any) => Swal.fire('Erreur', err.error?.message || 'Impossible de supprimer cette zone.', 'error')
@@ -155,7 +155,7 @@ export class ZonesListComponent implements OnInit {
   getTypeBadge(type: string): string {
     const map: Record<string, string> = {
       'WILAYA':    'bg-purple-100 text-purple-700 border border-purple-200',
-      'MOUGHATAA': 'bg-blue-100 text-blue-700 border border-blue-200',
+      'MOUGHATAA': 'bg-brand-100 text-brand-700 border border-brand-200',
       'COMMUNE':   'bg-green-100 text-green-700 border border-green-200',
       'QUARTIER':  'bg-orange-100 text-orange-700 border border-orange-200'
     };

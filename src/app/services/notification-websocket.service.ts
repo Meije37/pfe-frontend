@@ -41,6 +41,16 @@ export class NotificationWebSocketService implements OnDestroy {
 
     this.client = new Client({
       brokerURL: wsUrl,
+      // Relu à CHAQUE (re)connexion. Le jeton d'accès expire (30 min) et est renouvelé en
+      // arrière-plan par l'intercepteur HTTP : un en-tête figé au premier appel serait
+      // refusé par le serveur à chaque reconnexion (ex : après un redémarrage de Spring
+      // Boot) et les notifications temps réel s'arrêteraient jusqu'à un rechargement.
+      beforeConnect: () => {
+        const jetonCourant = localStorage.getItem('token');
+        if (jetonCourant && this.client) {
+          this.client.connectHeaders = { Authorization: `Bearer ${jetonCourant}` };
+        }
+      },
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },

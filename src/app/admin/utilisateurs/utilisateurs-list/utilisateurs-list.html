@@ -1,25 +1,25 @@
 <!-- Titre page -->
 <div class="mb-6 flex items-center justify-between">
   <div>
-    <h2 class="text-2xl font-extrabold text-gray-900">Utilisateurs</h2>
+    <h2 class="text-2xl font-bold text-gray-900">Utilisateurs</h2>
     <p class="mt-1 text-sm text-gray-500">Gérez les comptes citoyens, agents et administrateurs</p>
   </div>
   <button
     (click)="ouvrirCreation()"
-    class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+    class="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white text-sm font-bold rounded-lg hover:bg-brand-800 transition-all cursor-pointer">
     <i class="fa-solid fa-user-plus text-xs"></i>
     Nouvel utilisateur
   </button>
 </div>
 
 <!-- ========== BARRE FILTRES ========== -->
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+<div class="bg-white rounded-2xl border border-gray-200 p-4 mb-6">
   <div class="flex flex-wrap items-center gap-3">
-    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-brand-700 text-sm"></i>
     </div>
     <select [(ngModel)]="filtreRole" (ngModelChange)="onFiltreChange()"
-            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white cursor-pointer">
       <option value="">Tous les rôles</option>
       <option *ngFor="let r of roles.slice(1)" [value]="r">{{ r }}</option>
     </select>
@@ -34,7 +34,7 @@
         (ngModelChange)="onFiltreChange()"
         placeholder="Rechercher par nom, email, téléphone..."
         class="w-full pl-9 pr-9 py-2 border border-gray-300 rounded-lg text-sm text-gray-900
-               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
       <button *ngIf="recherche" (click)="resetRecherche()"
               class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
         <i class="fa-solid fa-circle-xmark text-xs"></i>
@@ -48,7 +48,7 @@
 </div>
 
 <!-- ========== TABLEAU ========== -->
-<div class="bg-white rounded-2xl shadow-xl border-t-4 border-blue-700 overflow-hidden">
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
 
   <div *ngIf="loading" class="p-6 space-y-3">
     <div *ngFor="let i of [1,2,3,4]" class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
@@ -74,8 +74,8 @@
         <!-- Avatar + Nom -->
         <td class="px-6 py-4">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold flex items-center justify-center flex-shrink-0">
-              {{ u.prenom?.charAt(0) }}{{ u.nom?.charAt(0) }}
+            <div class="w-9 h-9 rounded-full bg-brand-100 text-brand-800 text-sm font-semibold flex items-center justify-center flex-shrink-0">
+              {{ ((u.prenom?.charAt(0) ?? '') + (u.nom?.charAt(0) ?? '')) | uppercase }}
             </div>
             <div>
               <p class="font-medium text-gray-900">{{ u.prenom }} {{ u.nom }}</p>
@@ -135,7 +135,7 @@
         <td class="px-6 py-4">
           <div class="flex items-center gap-2">
             <button (click)="ouvrirEdition(u)" title="Modifier"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200">
+                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors cursor-pointer border border-brand-200">
               <i class="fa-solid fa-pen-to-square text-xs"></i>
             </button>
             <button (click)="toggleActif(u)" [title]="u.actif ? 'Désactiver' : 'Activer'"
@@ -181,12 +181,12 @@
 <div *ngIf="showModal"
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
 
-  <div class="bg-white rounded-2xl shadow-xl border-t-8 border-blue-700 w-full max-w-md p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm w-full max-w-md p-8 space-y-6 max-h-[90vh] overflow-y-auto">
 
     <!-- Header modal -->
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-xl font-extrabold text-gray-900">
+        <h3 class="text-xl font-bold text-gray-900">
           {{ editMode ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
         </h3>
         <p class="text-sm text-gray-500 mt-1">
@@ -207,13 +207,13 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
           <input formControlName="prenom" type="text"
-                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                  placeholder="Sidi">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
           <input formControlName="nom" type="text"
-                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                  placeholder="Mohamed">
         </div>
       </div>
@@ -222,7 +222,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input formControlName="email" type="email"
-               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                placeholder="nom@exemple.mr">
       </div>
 
@@ -230,7 +230,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone (Mauritanie)</label>
         <input formControlName="telephone" type="text"
-               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                placeholder="Ex: 44112233">
         <p *ngIf="form.get('telephone')?.invalid && form.get('telephone')?.touched"
            class="text-red-500 text-xs mt-1">
@@ -245,7 +245,7 @@
           <span *ngIf="editMode" class="text-gray-400 font-normal">(laisser vide pour ne pas changer)</span>
         </label>
         <input formControlName="motDePasse" type="password"
-               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
                placeholder="••••••••">
       </div>
 
@@ -253,7 +253,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
         <select formControlName="role"
-                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white">
+                class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm bg-white">
           <option value="CITOYEN">CITOYEN</option>
           <option value="AGENT">AGENT</option>
           <option value="ADMIN">ADMIN</option>
@@ -262,19 +262,19 @@
 
       <!-- ✅ Service — visible uniquement si rôle AGENT (dans le modal, pas dans le tableau) -->
       <div *ngIf="isAgentRole"
-           class="p-3 bg-blue-50 rounded-xl border border-blue-100">
+           class="p-3 bg-brand-50 rounded-xl border border-brand-100">
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Service rattaché
           <span class="text-gray-400 font-normal">(optionnel)</span>
         </label>
         <select formControlName="serviceId"
-                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white">
+                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm bg-white">
           <option [ngValue]="null">-- Aucun service --</option>
           <option *ngFor="let s of services" [ngValue]="s.id">
             {{ s.nom }}
           </option>
         </select>
-        <p class="text-xs text-blue-600 mt-1.5">
+        <p class="text-xs text-brand-600 mt-1.5">
           <i class="fa-solid fa-bolt mr-1"></i>
           Active l'assignation automatique des réclamations à cet agent.
         </p>
@@ -287,7 +287,7 @@
           Annuler
         </button>
         <button type="submit" [disabled]="form.invalid"
-                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
+                class="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-brand-700 hover:bg-brand-800 focus:outline-none transition-all disabled:opacity-50 cursor-pointer">
           {{ editMode ? 'Modifier' : 'Créer le compte' }}
         </button>
       </div>

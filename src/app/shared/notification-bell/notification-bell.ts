@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/notification-websocket.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification-bell',
@@ -16,6 +17,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
   private notificationWs = inject(NotificationWebSocketService);
   private elementRef = inject(ElementRef);
+  private router = inject(Router);
 
   ouvert = false;
   notifications: NotificationDTO[] = [];
@@ -83,6 +85,18 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
         notif.lu = true;
         this.nombreNonLues = Math.max(0, this.nombreNonLues - 1);
       });
+    }
+
+    // Au clic, on ouvre la réclamation concernée (admin ou agent selon le rôle).
+    if (notif.reclamationId) {
+      const role = localStorage.getItem('role');
+      const base = role === 'ADMIN' ? '/admin/reclamations'
+                 : role === 'AGENT' ? '/agent/mes-reclamations'
+                 : null;
+      if (base) {
+        this.ouvert = false;
+        this.router.navigate([base, notif.reclamationId]);
+      }
     }
   }
 

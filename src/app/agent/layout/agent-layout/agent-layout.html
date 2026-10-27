@@ -1,91 +1,106 @@
-<!-- Conteneur principal sans overflow qui force le débordement -->
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-[#f5f7f6]">
 
-  <!-- ========== SIDEBAR AGENT (Fixée à gauche) ========== -->
-  <aside class="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-200"
-         [class.w-56]="sidebarOpen"
-         [class.w-16]="!sidebarOpen">
+  <!-- ========== MENU LATÉRAL (fixe, vert institutionnel) ========== -->
+  <aside
+    class="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-brand-900 text-white transition-all duration-200"
+    [class.w-60]="sidebarOpen"
+    [class.w-16]="!sidebarOpen"
+    aria-label="Menu principal">
 
-    <!-- Brand -->
-    <div class="flex items-center gap-3 px-4 py-5 border-b border-gray-200">
-      <div class="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-user-tie text-white text-xs"></i>
-      </div>
+    <div class="national-stripe flex-shrink-0"></div>
+
+    <!-- Identité -->
+    <div class="flex items-center gap-3 px-3 py-4 border-b border-white/10">
+      <div class="w-10 h-10 rounded-full bg-white border border-brand-200 overflow-hidden flex items-center justify-center flex-shrink-0"><img src="logo_symbole.png" alt="Logo Chikayti" class="w-full h-full object-contain p-0.5"></div>
       <div *ngIf="sidebarOpen" class="overflow-hidden">
-        <p class="text-sm font-semibold text-gray-900 leading-tight">Espace Agent</p>
-        <p class="text-xs text-gray-400">Réclamations</p>
+        <p class="text-base font-bold leading-tight tracking-tight">Chikayti</p>
+        <p class="text-xs text-brand-200 truncate">Espace agent</p>
       </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 flex flex-col gap-1 px-2 py-4">
-      <p *ngIf="sidebarOpen" class="text-xs text-gray-400 uppercase tracking-widest px-2 mb-2">Menu</p>
-      <a *ngFor="let item of navItems"
-         [routerLink]="item.route"
-         routerLinkActive="bg-green-50 text-green-700 font-medium"
-         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline overflow-hidden whitespace-nowrap">
-        <i [class]="item.icon + ' w-4 text-center flex-shrink-0'"></i>
+    <nav class="flex-1 flex flex-col gap-1 px-2 py-4 overflow-y-auto">
+      <p *ngIf="sidebarOpen"
+         class="text-[11px] font-semibold text-brand-300 uppercase tracking-widest px-3 mb-1">
+        Mon travail
+      </p>
+
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="!bg-white !text-brand-900 font-semibold"
+        [attr.title]="sidebarOpen ? null : item.label"
+        class="flex items-center gap-3 h-11 px-3 rounded-lg text-sm text-brand-100 hover:bg-white/10 hover:text-white transition-colors no-underline overflow-hidden whitespace-nowrap">
+        <i [class]="item.icon + ' w-4 text-center flex-shrink-0'" aria-hidden="true"></i>
         <span *ngIf="sidebarOpen">{{ item.label }}</span>
       </a>
     </nav>
 
-    <!-- Footer Sidebar -->
-    <div class="flex items-center gap-2 px-3 py-3 border-t border-gray-200">
-      <div class="w-7 h-7 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+    <!-- Utilisateur connecté + déconnexion -->
+    <div class="flex items-center gap-2 px-3 py-3 border-t border-white/10">
+      <div class="w-8 h-8 rounded-full bg-white text-brand-900 text-xs font-semibold flex items-center justify-center flex-shrink-0">
         {{ getInitiales() }}
       </div>
       <div *ngIf="sidebarOpen" class="flex-1 overflow-hidden">
-        <p class="text-xs text-gray-700 font-medium truncate">{{ email }}</p>
-        <p class="text-xs text-gray-400">Agent</p>
+        <p class="text-xs text-white font-medium truncate">{{ email }}</p>
+        <p class="text-xs text-brand-200">Agent</p>
       </div>
-      <button (click)="logout()" title="Déconnexion"
-              class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors flex-shrink-0 cursor-pointer">
-        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+      <button
+        (click)="logout()"
+        title="Se déconnecter"
+        aria-label="Se déconnecter"
+        class="w-8 h-8 flex items-center justify-center rounded-md border border-white/20 text-brand-100 hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors flex-shrink-0 cursor-pointer">
+        <i class="fa-solid fa-right-from-bracket text-xs" aria-hidden="true"></i>
       </button>
     </div>
 
   </aside>
 
-  <!-- ========== CONTENU PRINCIPAL AGENT ========== -->
-  <div class="flex flex-col min-h-screen min-w-0 transition-all duration-200"
-       [class.ml-56]="sidebarOpen"
-       [class.ml-16]="!sidebarOpen">
+  <!-- ========== CONTENU ========== -->
+  <div
+    class="flex flex-col min-h-screen min-w-0 transition-all duration-200"
+    [class.ml-60]="sidebarOpen"
+    [class.ml-16]="!sidebarOpen">
 
-    <!-- TOPBAR -->
-    <header class="sticky top-0 z-40 flex items-center justify-between gap-4 bg-white border-b border-gray-200 px-6 py-3">
+    <!-- BANDEAU OFFICIEL -->
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-200">
+      <div class="national-stripe"></div>
+      <div class="flex items-center justify-between gap-4 px-6 py-3">
+        <div class="flex items-center gap-4 min-w-0">
+          <button
+            (click)="toggleSidebar()"
+            [attr.aria-label]="sidebarOpen ? 'Réduire le menu' : 'Déplier le menu'"
+            class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer flex-shrink-0">
+            <i class="fa-solid fa-bars text-sm" aria-hidden="true"></i>
+          </button>
 
-      <!-- Gauche : Menu Toggle + Titre -->
-      <div class="flex items-center gap-4 min-w-0">
-        <button (click)="toggleSidebar()"
-                class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer flex-shrink-0">
-          <i class="fa-solid fa-bars text-sm"></i>
-        </button>
-        <h1 class="text-base font-medium text-gray-900 truncate">
-          Plateforme de Réclamations Citoyennes
-        </h1>
-      </div>
-
-      <!-- Droite : Date + Cloche + Avatar -->
-      <div class="flex items-center gap-4 flex-shrink-0">
-        <div class="hidden sm:flex items-center gap-2 text-xs text-gray-400">
-          <i class="fa-regular fa-calendar"></i>
-          <span>{{ today | date:'d MMMM yyyy' }}</span>
+          <div class="min-w-0">
+            <p class="text-[15px] font-semibold text-gray-900 truncate leading-tight">
+              Plateforme des réclamations citoyennes · Espace agent
+            </p>
+            <p class="font-arabic text-[13px] text-gray-500 truncate" dir="rtl" style="text-align: left">منصة شكايات المواطنين · فضاء الأعوان</p>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <app-notification-bell></app-notification-bell>
+        <div class="flex items-center gap-4 flex-shrink-0">
+          <div class="hidden md:flex items-center gap-2 text-sm text-gray-500">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            <span>{{ today | date:'d MMMM yyyy' }}</span>
+          </div>
 
-          <a routerLink="/agent/profil"
-             class="w-8 h-8 rounded-full bg-green-100 text-green-800 text-xs font-semibold flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors no-underline">
-            {{ getInitiales() }}
-          </a>
+          <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
+            <app-notification-bell></app-notification-bell>
+
+            <a routerLink="/agent/profil" title="Mon profil"
+               class="w-9 h-9 rounded-full bg-brand-900 text-white text-xs font-semibold flex items-center justify-center hover:bg-brand-700 transition-colors no-underline">
+              {{ getInitiales() }}
+            </a>
+          </div>
         </div>
       </div>
-
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 p-6 min-w-0 overflow-x-auto">
+    <main class="flex-1 p-6 lg:p-8 min-w-0 overflow-x-auto">
       <router-outlet />
     </main>
 

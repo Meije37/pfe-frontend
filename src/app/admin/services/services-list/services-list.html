@@ -1,22 +1,22 @@
 <div class="mb-6 flex items-center justify-between">
   <div>
-    <h2 class="text-2xl font-extrabold text-gray-900">Services municipaux</h2>
+    <h2 class="text-2xl font-bold text-gray-900">Services municipaux</h2>
     <p class="mt-1 text-sm text-gray-500">Gérez les services techniques et leur rattachement géographique</p>
   </div>
   <button (click)="ouvrirCreation()"
-          class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-all cursor-pointer">
+          class="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white text-sm font-bold rounded-lg hover:bg-brand-800 transition-all cursor-pointer">
     <i class="fa-solid fa-plus text-xs"></i>
     Nouveau service
   </button>
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+<div class="bg-white rounded-2xl border border-gray-200 p-4 mb-6">
   <div class="flex flex-wrap items-center gap-3">
-    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-      <i class="fa-solid fa-filter text-blue-700 text-sm"></i>
+    <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-filter text-brand-700 text-sm"></i>
     </div>
     <select [(ngModel)]="filtreZoneId" (ngModelChange)="onFiltreChange()"
-            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+            class="appearance-none rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white cursor-pointer">
       <option value="">Toutes les zones</option>
       <option *ngFor="let z of zones" [value]="z.id">{{ z.nom }}</option>
     </select>
@@ -31,7 +31,7 @@
         (ngModelChange)="onFiltreChange()"
         placeholder="Rechercher par nom, email, description..."
         class="w-full pl-9 pr-9 py-2 border border-gray-300 rounded-lg text-sm text-gray-900
-               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
       <button *ngIf="recherche" (click)="resetRecherche()"
               class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
         <i class="fa-solid fa-circle-xmark text-xs"></i>
@@ -40,7 +40,7 @@
   </div>
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
   <table class="w-full text-left border-collapse">
     <thead class="bg-gray-50 border-b border-gray-100">
     <tr>
@@ -65,13 +65,13 @@
       </td>
       <td class="px-6 py-4">
     <span *ngIf="s.zone?.nom"
-          class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+          class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
       <i class="fa-solid fa-location-dot text-[10px]"></i>
       {{ s.zone.nom }}
     </span>
 
         <span *ngIf="s.nomZone"
-              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
   <i class="fa-solid fa-location-dot text-[10px]"></i>
   {{ s.nomZone }}
 </span>
@@ -125,7 +125,7 @@
 <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-      <h3 class="font-extrabold text-gray-900">{{ editMode ? 'Modifier le service' : 'Nouveau service' }}</h3>
+      <h3 class="font-bold text-gray-900">{{ editMode ? 'Modifier le service' : 'Nouveau service' }}</h3>
       <button (click)="fermerModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -135,24 +135,24 @@
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">Nom du service</label>
         <input formControlName="nom" type="text" placeholder="Ex: Service Voirie"
-               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all">
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
         <textarea formControlName="description" rows="2" placeholder="Détaillez les compétences du service..."
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">Email de contact</label>
         <input formControlName="emailService" type="email" placeholder="contact@service.mr"
-               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 outline-none">
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">Zone géographique</label>
-        <select formControlName="zoneId" class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white outline-none focus:ring-2 focus:ring-blue-500">
+        <select formControlName="zoneId" class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white outline-none focus:ring-2 focus:ring-brand-500">
           <option [ngValue]="null" disabled>Sélectionner une zone</option>
           <option *ngFor="let z of zones" [value]="z.id">{{ z.nom }}</option>
         </select>
@@ -162,7 +162,7 @@
       </div>
 
       <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-        <input formControlName="actif" type="checkbox" id="actif-srv" class="w-4 h-4 text-blue-700 rounded cursor-pointer">
+        <input formControlName="actif" type="checkbox" id="actif-srv" class="w-4 h-4 text-brand-700 rounded cursor-pointer">
         <label for="actif-srv" class="text-sm font-medium text-gray-700 cursor-pointer">Service opérationnel</label>
       </div>
 
@@ -171,7 +171,7 @@
           Annuler
         </button>
         <button type="submit" [disabled]="form.invalid"
-                class="flex-1 py-2.5 px-4 bg-blue-700 text-white text-sm font-bold rounded-lg hover:bg-blue-800 disabled:opacity-50 transition-all cursor-pointer">
+                class="flex-1 py-2.5 px-4 bg-brand-700 text-white text-sm font-bold rounded-lg hover:bg-brand-800 disabled:opacity-50 transition-all cursor-pointer">
           {{ editMode ? 'Sauvegarder' : 'Créer' }}
         </button>
       </div>
